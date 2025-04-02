@@ -3,6 +3,8 @@ import asyncio
 from lightrag.kg.postgres_impl import PGGraphStorage
 from lightrag.llm.ollama import ollama_embedding
 from lightrag.utils import EmbeddingFunc
+from dotenv import load_dotenv
+load_dotenv()
 
 #########
 # Uncomment the below two lines if running in a jupyter notebook to handle the async nature of rag.insert()
