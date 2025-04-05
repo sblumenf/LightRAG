@@ -67,6 +67,7 @@ class PostgreSQLDB:
                 port=self.port,
                 min_size=1,
                 max_size=self.max,
+                statement_cache_size=0
             )
 
             logger.info(
@@ -1661,7 +1662,7 @@ SQL_TEMPLATES = {
                                  FROM LIGHTRAG_DOC_FULL WHERE workspace=$1 AND id IN ({ids})
                             """,
     "get_by_ids_text_chunks": """SELECT id, tokens, COALESCE(content, '') as content,
-                                  chunk_order_index, full_doc_id
+                                  chunk_order_index, full_doc_id, file_path
                                    FROM LIGHTRAG_DOC_CHUNKS WHERE workspace=$1 AND id IN ({ids})
                                 """,
     "get_by_ids_llm_response_cache": """SELECT id, original_prompt, COALESCE(return_value, '') as "return", mode
@@ -1784,7 +1785,7 @@ SQL_TEMPLATES = {
                 FROM LIGHTRAG_VDB_ENTITY e
                 JOIN relevant_chunks c ON c.chunk_id = ANY(e.chunk_ids)
                 WHERE e.workspace=$1
-            )
+            ) AS entity_distances
         WHERE distance>$2
         ORDER BY distance DESC
         LIMIT $3
