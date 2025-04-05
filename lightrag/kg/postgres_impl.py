@@ -65,6 +65,7 @@ class PostgreSQLDB:
                 database=self.database,
                 host=self.host,
                 port=self.port,
+                ssl='require',
                 min_size=1,
                 max_size=self.max,
                 statement_cache_size=0
