@@ -1,0 +1,12 @@
+{
+  "doc-81cf75cfb3783f964c05cdea0968f72b": {
+    "status": "processed",
+    "chunks_count": 1,
+    "content": "This is a simple test document to verify LightRAG integration.",
+    "content_summary": "This is a simple test document to verify LightRAG integration.",
+    "content_length": 62,
+    "created_at": "2025-04-04T00:20:49.783146",
+    "updated_at": "2025-04-04T00:21:01.977731",
+    "file_path": "unknown_source"
+  }
+}
