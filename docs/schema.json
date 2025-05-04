@@ -1,0 +1,1895 @@
+{
+  "Curriculum": {
+    "Volume1_CoreStructureAndEthics": {
+      "LearningObjective": {
+        "id": "unique identifier",
+        "text": "description of the learning objective",
+        "examweight": "relative importance in exam",
+        "bloomtaxonomylevel": [
+          "remember",
+          "understand",
+          "apply",
+          "analyze",
+          "evaluate",
+          "create"
+        ],
+        "requiredcalculationability": "level of calculation skill needed",
+        "difficultyLevel": [
+          "basic",
+          "intermediate",
+          "advanced"
+        ],
+        "examWeighting": "prioritization of high-value topics",
+        "keyTerms": "essential vocabulary",
+        "commonMisconceptions": "frequent misunderstandings",
+        "practiceFrequency": "how often tested historically"
+      },
+      "CurriculumVolume": {
+        "number": "volume number",
+        "title": "volume title",
+        "examweightpercentage": "percentage of exam coverage",
+        "topicAreas": "main subject domains",
+        "learningOutcomeCount": "number of learning objectives",
+        "estimatedStudyHours": "recommended study time",
+        "coreThemes": "unifying concepts across readings"
+      },
+      "StudySession": {
+        "number": "session number",
+        "title": "session title",
+        "description": "overview of session content",
+        "importancelevel": "relative importance",
+        "readingCount": "number of readings included",
+        "estimatedCompletionTime": "expected study duration",
+        "prerequisiteKnowledge": "required background understanding",
+        "coreCompetencies": "key skills developed"
+      },
+      "Reading": {
+        "number": "reading number",
+        "title": "reading title",
+        "learningoutcomes": "key learning goals",
+        "keyconcepts": "main ideas covered",
+        "pagecount": "length of reading",
+        "difficultyrating": "complexity level",
+        "calculationIntensity": "amount of quantitative work",
+        "conceptualDensity": "concentration of theoretical ideas",
+        "practicalApplications": "real-world uses",
+        "commonExamQuestionTypes": "typical assessment formats",
+        "keyEquations": "important formulas",
+        "essentialExhibits": "critical tables/figures"
+      },
+      "EthicalStandard": {
+        "standardnumber": "standard identifier",
+        "title": "name of standard",
+        "description": "explanation of standard",
+        "violationexamples": "illustrations of prohibited behaviors",
+        "compliancerequirements": "steps for adherence",
+        "applicationScenarios": "examples of proper conduct",
+        "recommendedProcedures": "best practices for implementation",
+        "supervisoryResponsibilities": "oversight obligations",
+        "documentationRequirements": "record-keeping needs",
+        "mitigatingCircumstances": "factors affecting judgment",
+        "historicalContext": "evolution of the standard",
+        "keyInterpretations": "official guidance on application",
+        "crossBorderConsiderations": "international variations"
+      },
+      "ProfessionalConduct": {
+        "ruleid": "rule identifier",
+        "description": "explanation of conduct rule",
+        "applicationguidance": "how to apply the rule",
+        "commonviolations": "frequent infractions",
+        "preventativeMeasures": "proactive compliance steps",
+        "detectionMethods": "identifying violations",
+        "enforcementMechanisms": "disciplinary processes",
+        "caseExamples": "illustrative scenarios",
+        "complianceDocumentation": "required records",
+        "disclosureRequirements": "transparency obligations",
+        "clientImpact": "effects on investor protection"
+      },
+      "EthicalFramework": {
+        "name": "framework name",
+        "keyprinciples": "core values",
+        "decisionprocess": "ethical decision steps",
+        "theoreticalFoundation": "philosophical basis",
+        "applicationMethodology": "implementation approach",
+        "stakeholderConsiderations": "affected parties",
+        "conflictResolutionProcess": "addressing ethical dilemmas",
+        "professionalContexts": "relevant work situations",
+        "comparativeAnalysis": "contrast with other frameworks",
+        "historicalDevelopment": "evolution over time"
+      },
+      "CaseStudy": {
+        "scenarioDescription": "ethical situation",
+        "ethicalDilemmas": "conflicts identified",
+        "recommendedActions": "proper resolution",
+        "standardsInvolved": "relevant ethical standards",
+        "stakeholdersAffected": "parties impacted",
+        "alternativePerspectives": "different viewpoints",
+        "consequenceAnalysis": "outcomes of various actions",
+        "preventativeMeasures": "avoiding similar situations",
+        "applicableLaws": "legal considerations",
+        "industryContext": "sector-specific factors",
+        "keyLessons": "principal takeaways"
+      },
+      "GIPSStandard": {
+        "complianceRequirement": "specific requirements",
+        "verificationProcedure": "validation processes",
+        "presentationGuideline": "proper reporting",
+        "calculationMethodology": "performance computation",
+        "disclosureRequirements": "mandatory information",
+        "compositeConstruction": "portfolio grouping rules",
+        "inputDataRequirements": "necessary information",
+        "errorCorrectionPolicy": "mistake remediation",
+        "marketingCompliance": "promotional material rules",
+        "recordKeepingRequirements": "documentation needs",
+        "applicabilityScope": "firms/situations covered"
+      },
+      "CodeAndStandardSection": {
+        "sectionNumber": "section identifier",
+        "title": "section name",
+        "coreRequirements": "primary obligations",
+        "guidanceAndInterpretation": "clarifying information",
+        "recommendedProcedures": "suggested implementation",
+        "applicationToRoles": "relevance to job functions"
+      }
+    },
+    "Volume2_Economics": {
+      "EconomicConcept": {
+        "name": "concept name",
+        "definition": "explanation of concept",
+        "importance": "relevance to finance",
+        "relatedtheories": "connected economic theories",
+        "historicalDevelopment": "evolution of the concept",
+        "keyProponents": "major contributing economists",
+        "empiricalEvidence": "supporting research findings",
+        "criticalAssumptions": "underlying premises",
+        "limitationsAndCriticisms": "weaknesses and challenges",
+        "financialMarketApplications": "uses in investment analysis",
+        "quantitativeMeasures": "mathematical representations",
+        "policyImplications": "impact on government decisions"
+      },
+      "MarketStructure": {
+        "type": "structure classification",
+        "characteristics": "defining features",
+        "efficiencyimplications": "impact on market efficiency",
+        "realworldexamples": "actual market instances",
+        "competitionLevel": "degree of rivalry",
+        "entryBarriers": "obstacles to new competitors",
+        "pricingMechanisms": "how prices are determined",
+        "informationAsymmetry": "knowledge disparities",
+        "regulatoryConsiderations": "government oversight",
+        "marketPower": "influence of individual participants",
+        "allocativeEfficiency": "resource distribution optimality",
+        "productiveEfficiency": "cost minimization capability",
+        "technologicalInnovation": "advancement patterns"
+      },
+      "BusinessCycle": {
+        "phase": "cycle stage",
+        "characteristics": "defining features",
+        "typicalduration": "expected length",
+        "policyresponses": "typical policy actions",
+        "leadingIndicators": "predictive economic signals",
+        "laggingIndicators": "confirming economic signals",
+        "coincidentIndicators": "concurrent economic signals",
+        "sectoralImpacts": "effects on different industries",
+        "assetClassPerformance": "investment returns by phase",
+        "historicalPatterns": "past cycle characteristics",
+        "internationalSynchronization": "global coordination",
+        "amplitudeDeterminants": "factors affecting severity",
+        "structuralVsCyclical": "temporary vs. permanent changes"
+      },
+      "MonetaryPolicy": {
+        "toolname": "policy instrument",
+        "implementingauthority": "governing body",
+        "transmissionmechanism": "how policy affects economy",
+        "economicimpact": "effects on economic variables",
+        "limitations": "constraints on effectiveness",
+        "conventionalTools": [
+          "open market operations",
+          "discount rate",
+          "reserve requirements"
+        ],
+        "unconventionalTools": [
+          "quantitative easing",
+          "forward guidance",
+          "negative rates"
+        ],
+        "implementationLags": "time delays in effects",
+        "neutralRate": "equilibrium interest rate concept",
+        "policyReactionFunction": "decision-making framework",
+        "centralBankIndependence": "autonomy considerations",
+        "inflationTargeting": "price stability approach",
+        "financialStabilityConsiderations": "systemic risk management",
+        "internationalCoordination": "cross-border cooperation",
+        "monetaryRegimes": [
+          "inflation targeting",
+          "price level targeting",
+          "nominal GDP targeting"
+        ]
+      },
+      "FiscalPolicy": {
+        "measuretype": "policy approach",
+        "implementingauthority": "governing body",
+        "economicimpact": "effects on economic variables",
+        "limitations": "constraints on effectiveness",
+        "implementationchallenges": "difficulties in execution",
+        "automaticStabilizers": "self-adjusting mechanisms",
+        "discretionaryMeasures": "deliberate policy actions",
+        "budgetDeficitImplications": "consequences of spending > revenue",
+        "debtSustainability": "long-term viability analysis",
+        "multiplierEffects": "amplification of initial spending",
+        "crowdingOutPhenomenon": "private investment displacement",
+        "taxPolicyComponents": "revenue generation approaches",
+        "expenditureCategories": "government spending types",
+        "politicalEconomyFactors": "non-economic influences",
+        "intergenerationalEquity": "future generation impacts"
+      },
+      "EconomicIndicator": {
+        "name": "indicator name",
+        "calculationmethod": "how it's computed",
+        "frequency": "how often reported",
+        "predictivevalue": "forecasting utility",
+        "limitations": "constraints on usefulness",
+        "leadingorlagging": "timing relationship",
+        "revisionFrequency": "how often updated",
+        "seasonalAdjustment": "accounting for time patterns",
+        "benchmarkComparisons": "reference points",
+        "volatilityCharacteristics": "stability of measurements",
+        "structuralBreaks": "pattern disruptions",
+        "compositionalDetails": "component breakdown",
+        "crossCountryComparability": "international standardization",
+        "marketSensitivity": "price reaction to releases",
+        "alternativeMeasures": "complementary indicators"
+      },
+      "MacroeconomicTheory": {
+        "schoolOfThought": "theoretical framework",
+        "keyProponents": "major contributing economists",
+        "centralTenets": "core principles",
+        "policyPrescriptions": "recommended government actions",
+        "criticalAssumptions": "underlying premises",
+        "empiricalValidation": "supporting evidence",
+        "historicalContext": "development timeline",
+        "competingTheories": "alternative explanations",
+        "mathematicalFormulation": "quantitative representation",
+        "applicabilityLimits": "boundary conditions"
+      },
+      "InternationalTrade": {
+        "tradeTheory": "conceptual framework",
+        "comparativeAdvantage": "specialization rationale",
+        "tradeBarriers": [
+          "tariffs",
+          "quotas",
+          "non-tariff barriers"
+        ],
+        "tradeAgreements": "international arrangements",
+        "exchangeRateImpacts": "currency effects",
+        "balanceOfPayments": "international transactions record",
+        "tradeDeficitImplications": "consequences of imports > exports",
+        "globalValueChains": "production fragmentation",
+        "economicIntegration": "market unification processes",
+        "tradeDisputeResolution": "conflict management mechanisms"
+      },
+      "ExchangeRateDeterminant": {
+        "factorType": "influencing variable",
+        "transmissionMechanism": "how it affects exchange rates",
+        "relativeImportance": "significance level",
+        "timeHorizon": "short vs long-term impact",
+        "empiricalEvidence": "supporting research",
+        "policyImplications": "government response options",
+        "marketParticipantBehavior": "trader reactions",
+        "interactionEffects": "relationships with other factors"
+      },
+      "EconomicGrowthDriver": {
+        "driverType": "growth factor",
+        "contributionMechanism": "how it affects output",
+        "measurementApproach": "quantification method",
+        "historicalEvidence": "past importance",
+        "crossCountryVariation": "international differences",
+        "policyLeveragePoints": "government influence options",
+        "sustainabilityConsiderations": "long-term viability",
+        "distributionalEffects": "impact across population"
+      },
+      "InflationDynamics": {
+        "inflationType": "specific category",
+        "definition": "description of inflation dynamics",
+        "impactFactors": "elements influencing inflation",
+        "measurementChallenges": "difficulties in capturing data"
+      }
+    },
+    "Volume3_FinancialReportingAndAnalysis": {
+      "FinancialStatement": {
+        "type": "statement classification",
+        "purpose": "intended use",
+        "keycomponents": "major elements",
+        "analyticalvalue": "usefulness for analysis",
+        "limitations": "constraints on usefulness",
+        "reportingfrequency": "how often issued",
+        "preparationResponsibility": "who creates the statement",
+        "auditRequirements": "verification standards",
+        "presentationFormat": "layout requirements",
+        "comparabilityConsiderations": "cross-entity analysis factors",
+        "disclosureRequirements": "mandatory information",
+        "supplementaryInformation": "additional helpful data",
+        "commonAdjustments": "analyst modifications",
+        "qualityIndicators": "reliability markers",
+        "redFlagWarnings": "potential problem signals"
+      },
+      "AccountingStandard": {
+        "name": "standard name",
+        "issuingbody": "authoritative organization",
+        "applicablejurisdictions": "where enforced",
+        "keyprinciples": "core concepts",
+        "implementationchallenges": "difficulties in application",
+        "effectiveDate": "when implemented",
+        "transitionGuidance": "implementation approach",
+        "industrySpecificProvisions": "sector adaptations",
+        "amendmentHistory": "changes over time",
+        "convergenceStatus": "harmonization with other standards",
+        "recognitionCriteria": "when to record transactions",
+        "measurementRequirements": "valuation approaches",
+        "presentationRules": "display requirements",
+        "disclosureObligations": "information sharing rules",
+        "interpretiveGuidance": "clarification resources"
+      },
+      "FinancialReportingElement": {
+        "name": "element name",
+        "recognitioncriteria": "when to include",
+        "measurementapproaches": "how to value",
+        "disclosurerequirements": "what to report",
+        "analyticalimplications": "impact on analysis",
+        "classificationOptions": "categorization choices",
+        "judgmentalAreas": "subjective determinations",
+        "estimationTechniques": "quantification methods",
+        "underlyingAssumptions": "implicit premises",
+        "manipulationVulnerability": "earnings management risk",
+        "industrySpecificConsiderations": "sector variations",
+        "internationalDifferences": "cross-border variations",
+        "trendAnalysisValue": "time-series insights",
+        "commonMisconceptions": "analyst mistakes",
+        "adjustmentRationale": "modification justifications"
+      },
+      "FinancialRatio": {
+        "name": "ratio name",
+        "category": "ratio classification",
+        "formula": "calculation method",
+        "interpretationguidelines": "how to understand results",
+        "industrybenchmarks": "typical values by sector",
+        "limitations": "constraints on usefulness",
+        "analyticalvalue": "significance for analysis",
+        "trendImportance": "time-series significance",
+        "crossSectionalComparability": "peer comparison value",
+        "businessCycleSensitivity": "economic condition effects",
+        "manipulationVulnerability": "distortion potential",
+        "adjustmentConsiderations": "modification needs",
+        "commonMisinterpretations": "analytical mistakes",
+        "relationshipToOtherRatios": "interconnections",
+        "dataQualityDependence": "input reliability factors",
+        "forecastingUtility": "predictive value"
+      },
+      "AccountingPolicy": {
+        "policyArea": "accounting topic",
+        "allowableApproaches": "permitted methods",
+        "disclosureRequirements": "transparency obligations",
+        "managementDiscretion": "judgment latitude",
+        "industryNorms": "common sector practices",
+        "financialStatementImpact": "effects on reports",
+        "analyticalImplications": "interpretation considerations",
+        "comparabilityEffects": "cross-entity analysis issues",
+        "qualitySignals": "what choices indicate",
+        "changeFrequency": "stability of policy",
+        "regulatoryScrutiny": "oversight attention"
+      },
+      "EarningsQuality": {
+        "assessmentDimension": "evaluation aspect",
+        "measurementApproach": "quantification method",
+        "redFlagIndicators": "warning signs",
+        "persistenceFactors": "sustainability elements",
+        "manipulationIndicators": "distortion signals",
+        "industrySpecificConsiderations": "sector variations",
+        "cashFlowRelationship": "operating cash validation",
+        "accrualComponents": "non-cash elements",
+        "forecastingImplications": "prediction effects",
+        "valuationImpact": "pricing consequences"
+      },
+      "FinancialDisclosure": {
+        "disclosureType": "information category",
+        "regulatoryRequirement": "mandatory status",
+        "presentationLocation": "where information appears",
+        "analyticalValue": "usefulness for analysis",
+        "completenessAssessment": "adequacy evaluation",
+        "qualityIndicators": "excellence markers",
+        "industrySpecificExpectations": "sector norms",
+        "trendImportance": "time-series significance",
+        "managementMessageIndications": "signaling value",
+        "litigationRiskImpact": "legal exposure effects"
+      },
+      "SegmentReporting": {
+        "segmentationType": "division approach",
+        "reportingRequirements": "disclosure obligations",
+        "analyticalApplications": "analysis uses",
+        "crossSegmentComparisons": "internal benchmarking",
+        "allocationMethodologies": "cost/revenue distribution",
+        "transferPricingImplications": "internal transaction effects",
+        "managementInsightValue": "strategic revelation",
+        "competitiveIntelligenceUtility": "industry positioning data",
+        "forecastingApplications": "projection uses",
+        "disclosureQualityAssessment": "adequacy evaluation"
+      },
+      "FinancialStatementAdjustment": {
+        "adjustmentPurpose": "modification goal",
+        "affectedStatements": "reports modified",
+        "calculationMethodology": "computation approach",
+        "analyticalJustification": "rationale for change",
+        "comparabilityEnhancement": "standardization benefit",
+        "industrySpecificConsiderations": "sector factors",
+        "commonApplications": "frequent uses",
+        "implementationChallenges": "practical difficulties",
+        "judgmentalElements": "subjective aspects",
+        "documentationRequirements": "support needed"
+      },
+      "OffBalanceSheetItem": {
+        "arrangementType": "structure classification",
+        "disclosureRequirements": "reporting obligations",
+        "economicSubstance": "true nature assessment",
+        "riskImplications": "exposure considerations",
+        "analyticalAdjustments": "analysis modifications",
+        "regulatoryTreatment": "oversight approach",
+        "industryPrevalence": "sector frequency",
+        "detectionApproaches": "identification methods",
+        "financialStatementImpacts": "effects if recognized",
+        "evolutionOfTreatment": "changing standards"
+      },
+      "CashFlowAnalysis": {
+        "analyticalFocus": "examination area",
+        "calculationApproach": "computation method",
+        "qualityAssessment": "reliability evaluation",
+        "sustainabilityIndications": "persistence signals",
+        "relationshipToEarnings": "accrual reconciliation",
+        "investmentImplications": "capital allocation insights",
+        "financingImplications": "funding requirement signals",
+        "forecastingApplications": "projection utility",
+        "industrySpecificConsiderations": "sector factors",
+        "manipulationVulnerabilities": "distortion risks"
+      },
+      "TaxAccounting": {
+        "taxRegime": "jurisdictional framework",
+        "book-taxDifferences": "reporting vs. tax disparities",
+        "deferredTaxImplications": "timing effect consequences",
+        "effectiveTaxRateAnalysis": "actual burden assessment",
+        "taxPlanningIndicators": "strategy signals",
+        "crossBorderConsiderations": "international aspects",
+        "disclosureRequirements": "reporting obligations",
+        "analyticalAdjustments": "analysis modifications",
+        "cashFlowImpacts": "liquidity effects"
+      }
+    },
+    "Volume4_CorporateFinanceAndEquity": {
+      "ValuationModel": {
+        "name": "model name",
+        "applicableassets": "what can be valued",
+        "requiredinputs": "necessary data",
+        "calculationsteps": "computation process",
+        "keyassumptions": "critical premises",
+        "limitations": "constraints on usefulness",
+        "interpretiveguidance": "how to understand results",
+        "sensitivityFactors": "variables with greatest impact",
+        "theoreticalFoundation": "underlying financial theory",
+        "empiricalValidation": "research support",
+        "appropriateApplications": "suitable scenarios",
+        "commonImplementationErrors": "frequent mistakes",
+        "modelRiskConsiderations": "potential for misestimation",
+        "comparativeAdvantages": "benefits vs. other models",
+        "industrySpecificAdaptations": "sector adjustments"
+      },
+      "DiscountedCashFlowModel": {
+        "modelvariant": "DCF approach type",
+        "applicablescenarios": "when to use",
+        "projectionperiod": "forecast timeframe",
+        "terminalvalueapproach": "perpetuity method",
+        "discountratedetermination": "how to set discount rate",
+        "sensitivityfactors": "critical variables",
+        "cashFlowDefinition": "exact measure used",
+        "growthAssumptions": "expansion expectations",
+        "marginProjections": "profitability forecasts",
+        "capitalExpenditureEstimation": "investment predictions",
+        "workingCapitalRequirements": "operational funding needs",
+        "taxRateConsiderations": "fiscal impact assessment",
+        "inflationAdjustments": "price level accounting",
+        "currencyConsiderations": "exchange rate handling",
+        "scenarioAnalysisFramework": "alternative outcome evaluation"
+      },
+      "RelativeValuationMultiple": {
+        "name": "multiple name",
+        "formula": "calculation method",
+        "comparableselectioncriteria": "peer group selection",
+        "adjustmentfactors": "normalization approaches",
+        "interpretationguidelines": "how to understand results",
+        "commonpitfalls": "frequent errors",
+        "industrySpecificBenchmarks": "sector standards",
+        "businessCycleSensitivity": "economic condition effects",
+        "growthRateInfluence": "expansion impact",
+        "profitabilityRelationship": "earnings quality effects",
+        "capitalStructureImpact": "financing influence",
+        "crossBorderConsiderations": "international comparisons",
+        "timeSeriesStability": "historical consistency",
+        "forecastingUtility": "predictive value",
+        "combinationStrategies": "multi-multiple approaches"
+      },
+      "CorporateFinanceConcept": {
+        "name": "concept name",
+        "definition": "explanation of concept",
+        "applicationcontext": "when to apply",
+        "implementationchallenges": "difficulties in execution",
+        "theoreticalFoundation": "underlying principles",
+        "empiricalEvidence": "research support",
+        "practicalImplications": "real-world effects",
+        "evolutionOverTime": "historical development",
+        "internationalVariations": "cross-border differences",
+        "industrySpecificConsiderations": "sector adaptations",
+        "regulatoryInfluences": "legal framework effects",
+        "stakeholderImpacts": "affected party consequences",
+        "measurementApproaches": "quantification methods",
+        "relationshipToShareholderValue": "owner benefit connection",
+        "emergingTrends": "evolving practices"
+      },
+      "CapitalStructure": {
+        "theoryname": "theory identifier",
+        "keypropositions": "main claims",
+        "assumptions": "underlying premises",
+        "empiricalevidence": "supporting research",
+        "practicalimplications": "real-world applications",
+        "optimalityDeterminants": "ideal mix factors",
+        "taxShieldBenefits": "fiscal advantages",
+        "financialDistressCosts": "bankruptcy risk expenses",
+        "agencyConflictEffects": "stakeholder tension impacts",
+        "informationAsymmetryInfluence": "signaling considerations",
+        "industryNorms": "sector patterns",
+        "lifecycleConsiderations": "maturity stage effects",
+        "macroeconomicInfluences": "economic condition impacts",
+        "adjustmentProcesses": "transition mechanisms",
+        "measurementMetrics": "evaluation approaches"
+      },
+      "DividendPolicy": {
+        "policytype": "approach classification",
+        "implementationapproach": "execution method",
+        "signalingeffects": "information content",
+        "taximplications": "tax consequences",
+        "investorpreferencefactors": "shareholder considerations",
+        "lifecycleConsiderations": "maturity stage effects",
+        "stabilityCharacteristics": "consistency patterns",
+        "payoutRatioTargets": "distribution proportion goals",
+        "retentionJustifications": "reinvestment rationales",
+        "alternativeDistributionMethods": "share repurchases/special dividends",
+        "industryNorms": "sector patterns",
+        "clienteleEffects": "investor self-selection",
+        "cashFlowConstraints": "liquidity limitations",
+        "legalRestrictions": "regulatory boundaries",
+        "competitorBenchmarking": "peer comparison factors"
+      },
+      "CorporateGovernance": {
+        "mechanism": "governance tool",
+        "stakeholdersaffected": "impacted parties",
+        "implementationchallenges": "difficulties in execution",
+        "effectivenessmetrics": "performance measures",
+        "bestpractices": "recommended approaches",
+        "boardStructureConsiderations": "director organization",
+        "ownershipConcentrationEffects": "shareholder distribution impact",
+        "executiveCompensationDesign": "incentive alignment approaches",
+        "shareholderRightProvisions": "owner protection measures",
+        "transparencyRequirements": "disclosure obligations",
+        "regulatoryFramework": "legal governance requirements",
+        "institutionalInvestorInfluence": "large shareholder impact",
+        "activistInterventionVulnerability": "external pressure exposure",
+        "crossBorderVariations": "international differences",
+        "governanceFailureCases": "cautionary examples"
+      },
+      "CapitalBudgeting": {
+        "methodname": "technique identifier",
+        "calculationapproach": "computation method",
+        "decisioncriteria": "acceptance standards",
+        "advantages": "benefits of method",
+        "limitations": "constraints on usefulness",
+        "applicationcontext": "when to use",
+        "riskAdjustmentTechniques": "uncertainty accommodation",
+        "cashFlowEstimationProcess": "projection methodology",
+        "capitalRationingConsiderations": "resource constraint handling",
+        "projectInterdependencies": "initiative relationships",
+        "postImplementationReview": "outcome assessment",
+        "strategicConsiderations": "non-financial factors",
+        "realOptionComponents": "flexibility valuation",
+        "inflationEffects": "price level adjustments",
+        "internationalProjectFactors": "cross-border considerations"
+      },
+      "EquityInvestment": {
+        "type": "investment classification",
+        "characteristics": "defining features",
+        "valuationapproaches": "how to value",
+        "riskfactors": "sources of uncertainty",
+        "returncomponents": "sources of return",
+        "marketEfficiencyImplications": "pricing accuracy considerations",
+        "tradingMechanics": "execution processes",
+        "liquidityCharacteristics": "ease of transaction",
+        "informationSources": "research resources",
+        "ownershipRights": "investor entitlements",
+        "taxTreatment": "fiscal consequences",
+        "benchmarkIndices": "performance comparisons",
+        "investmentVehicles": "access methods",
+        "globalConsiderations": "international factors",
+        "alternativeInvestmentComparisons": "other asset class relationships"
+      },
+      "IndustryAnalysisFramework": {
+        "name": "framework name",
+        "keycomponents": "main elements",
+        "analyticalsteps": "analysis process",
+        "competitivefactors": "competition drivers",
+        "applicationguidance": "how to apply",
+        "dataRequirements": "necessary information",
+        "structuralDeterminants": "industry architecture factors",
+        "lifecycleConsiderations": "maturity stage effects",
+        "disruptionVulnerability": "innovation threat assessment",
+        "regulatoryInfluences": "legal framework effects",
+        "globalIntegrationFactors": "international considerations",
+        "valueChainAnalysis": "activity breakdown approach",
+        "profitPoolDistribution": "earnings allocation patterns",
+        "cyclicalityCharacteristics": "economic sensitivity",
+        "forecastingApplications": "prediction utility"
+      },
+      "CompanyAnalysisElement": {
+        "category": "element classification",
+        "keymetrics": "important measures",
+        "analyticalvalue": "usefulness for analysis",
+        "informationsources": "data origins",
+        "interpretationguidance": "how to understand results",
+        "competitivePositioningFactors": "market standing elements",
+        "managementQualityIndicators": "leadership assessment",
+        "operationalEfficiencyMeasures": "process effectiveness",
+        "growthDriverAnalysis": "expansion catalysts",
+        "financialHealthEvaluation": "stability assessment",
+        "businessModelSustainability": "longevity factors",
+        "corporateCultureConsiderations": "organizational behavior",
+        "innovationCapabilityAssessment": "development potential",
+        "stakeholderRelationshipAnalysis": "external party interactions",
+        "environmentalSocialGovernanceFactors": "ESG considerations"
+      },
+      "MergersAcquisitions": {
+        "dealType": "transaction classification",
+        "strategicRationale": "business justification",
+        "valuationMethodologies": "worth determination",
+        "synergySources": "combination benefits",
+        "dealStructureOptions": "transaction frameworks",
+        "financingApproaches": "funding methods",
+        "dueDigligenceProcess": "investigation procedures",
+        "integrationConsiderations": "combination planning",
+        "regulatoryHurdles": "approval requirements",
+        "shareholderApprovalFactors": "owner consent issues",
+        "postMergerPerformance": "outcome assessment",
+        "dealPremiumJustification": "price increment rationale",
+        "crossBorderComplexities": "international factors",
+        "hostileVsFriendlyDynamics": "reception considerations",
+        "governanceImplications": "control consequences"
+      },
+      "EquityMarketAnomaly": {
+        "anomalyName": "effect identifier",
+        "empiricalEvidence": "research support",
+        "theoreticalExplanations": "causal hypotheses",
+        "persistenceCharacteristics": "durability assessment",
+        "exploitationStrategies": "monetization approaches",
+        "marketEfficiencyImplications": "EMH consequences",
+        "riskBased": "risk-based components"
+      }
+    },
+    "Volume5_FixedIncomeDerivativesAlternativeInvestments": {
+      "FixedIncomeInstrument": {
+        "type": "instrument classification",
+        "issuercategories": "types of issuers",
+        "typicalterms": "common features",
+        "riskcharacteristics": "sources of uncertainty",
+        "yieldmeasures": "return metrics",
+        "valuationapproaches": "how to value",
+        "maturityProfile": "time to expiration",
+        "couponStructure": "interest payment pattern",
+        "principalRepaymentProvisions": "capital return terms",
+        "embeddedOptions": "contingent rights",
+        "covenantRestrictions": "contractual limitations",
+        "liquidityCharacteristics": "trading ease",
+        "taxConsiderations": "fiscal treatment",
+        "regulatoryClassification": "oversight categorization",
+        "marketConventions": "trading practices",
+        "benchmarkRelationships": "index inclusion"
+      },
+      "BondValuationModel": {
+        "name": "model name",
+        "applicableinstruments": "bonds that can be valued",
+        "requiredinputs": "necessary data",
+        "calculationsteps": "computation process",
+        "interpretationguidance": "how to understand results",
+        "limitations": "constraints on usefulness",
+        "discountRateDetermination": "yield selection approach",
+        "cashFlowProjectionMethod": "payment estimation",
+        "optionAdjustmentTechniques": "embedded feature handling",
+        "spreadCalculationApproaches": "risk premium determination",
+        "accuracyAssessment": "precision evaluation",
+        "sensitivityAnalysisFramework": "variable impact testing",
+        "marketConventionAdherence": "standard practice alignment",
+        "arbitrageConsiderations": "mispricing identification",
+        "implementationChallenges": "practical difficulties"
+      },
+      "YieldCurveConcept": {
+        "conceptname": "concept identifier",
+        "definition": "explanation of concept",
+        "marketimplications": "significance for markets",
+        "analyticalapplications": "uses in analysis",
+        "theoryfoundations": "underlying theories",
+        "constructionMethodologies": "development approaches",
+        "termStructureTheories": "shape explanation frameworks",
+        "economicIndicatorValue": "forecasting utility",
+        "riskPremiumComponents": "excess return elements",
+        "historicalPatterns": "typical configurations",
+        "invertedCurveSignificance": "negative slope implications",
+        "bootstrappingTechniques": "zero curve derivation",
+        "interpolationMethods": "missing point estimation",
+        "internationalComparisons": "cross-market analysis",
+        "monetaryPolicyRelationship": "central bank influence"
+      },
+      "CreditAnalysis": {
+        "frameworkname": "approach identifier",
+        "keymetrics": "important measures",
+        "analyticalprocess": "analysis steps",
+        "riskassessmentcriteria": "evaluation standards",
+        "informationsources": "data origins",
+        "quantitativeFactors": "numerical indicators",
+        "qualitativeConsiderations": "subjective elements",
+        "industrySpecificRisks": "sector vulnerabilities",
+        "capitalStructureImplications": "financing impact",
+        "cashFlowAdequacyMeasures": "payment capacity assessment",
+        "covenantAnalysisTechniques": "restriction evaluation",
+        "recoveryEstimationMethods": "default loss projection",
+        "ratingAgencyMethodologies": "external assessment approaches",
+        "stressTestingFrameworks": "downside scenario analysis",
+        "comparableIssuerBenchmarking": "peer comparison techniques"
+      },
+      "FixedIncomeRiskMeasure": {
+        "measureName": "metric identifier",
+        "riskType": "uncertainty classification",
+        "calculationMethodology": "computation approach",
+        "interpretationGuidelines": "meaning explanation",
+        "typicalValues": "normal range",
+        "limitationsAndCaveats": "usage constraints",
+        "applicationContext": "appropriate scenarios",
+        "relationshipToOtherMeasures": "metric interactions",
+        "hedgingApplications": "risk mitigation uses",
+        "portfolioLevelAggregation": "composite calculation",
+        "historicalPerformance": "predictive accuracy",
+        "stressTestingFramework": "extreme scenario behavior",
+        "regulatoryRecognition": "official status",
+        "modelRiskConsiderations": "estimation uncertainty",
+        "marketConventions": "industry standards"
+      },
+      "SecuritizedProduct": {
+        "structureType": "product classification",
+        "underlyingAssets": "collateral types",
+        "cashFlowWaterfall": "payment priority",
+        "creditEnhancementFeatures": "protection mechanisms",
+        "prepaymentConsiderations": "early repayment factors",
+        "tranchingStructure": "slice characteristics",
+        "triggerEvents": "contingent actions",
+        "servicingArrangements": "administration framework",
+        "analyticalChallenges": "evaluation difficulties",
+        "regulatoryTreatment": "oversight approach",
+        "marketParticipants": "typical investors/issuers",
+        "pricingConsiderations": "valuation factors",
+        "liquidityCharacteristics": "trading ease",
+        "historicalPerformance": "past behavior patterns",
+        "evolutionaryTrends": "structural developments"
+      },
+      "DerivativeInstrument": {
+        "type": "instrument classification",
+        "underlyingassetclasses": "reference assets",
+        "contractspecifications": "terms and conditions",
+        "pricingdeterminants": "valuation factors",
+        "riskcharacteristics": "sources of uncertainty",
+        "commonapplications": "typical uses",
+        "valuationMethodology": [
+          "arbitrage-based",
+          "replication-based",
+          "cost-of-carry"
+        ],
+        "riskManagementApplication": [
+          "hedging",
+          "speculation",
+          "arbitrage"
+        ],
+        "marketStructure": [
+          "OTC",
+          "exchange-traded",
+          "centrally-cleared"
+        ],
+        "payoffProfile": "return pattern",
+        "leverageCharacteristics": "magnification effects",
+        "counterpartyConsiderations": "default exposure",
+        "liquidityFeatures": "trading ease",
+        "regulatoryFramework": "oversight structure",
+        "accountingTreatment": "financial reporting approach",
+        "taxImplications": "fiscal consequences",
+        "documentationStandards": "legal frameworks"
+      },
+      "OptionContract": {
+        "optiontype": "call or put",
+        "exercisestyle": "American or European",
+        "payoffprofile": "return pattern",
+        "pricingmodel": "valuation approach",
+        "greeks": "sensitivity measures",
+        "tradingstrategies": "common combinations",
+        "impliedVolatilityAnalysis": "market expectation extraction",
+        "earlyExerciseConsiderations": "premature execution factors",
+        "dividendImpact": "distribution effects",
+        "putCallParity": "relationship constraints",
+        "volatilitySmile": "strike price patterns",
+        "termStructureEffects": "time horizon influences",
+        "exoticFeatures": "non-standard characteristics",
+        "hedgingApproaches": "risk mitigation techniques",
+        "marketConventions": "trading practices"
+      },
+      "ForwardFuturesContract": {
+        "contracttype": "forward or future",
+        "standardizationlevel": "customization degree",
+        "deliveryspecifications": "settlement terms",
+        "pricingrelationship": "valuation approach",
+        "commonapplications": "typical uses",
+        "riskconsiderations": "potential hazards",
+        "marginRequirements": "collateral needs",
+        "markToMarketProcess": "daily settlement",
+        "basisRiskFactors": "hedging imperfection sources",
+        "contangoBackwardation": "term structure patterns",
+        "rollingStrategies": "position maintenance approaches",
+        "deliveryOptionsValue": "settlement flexibility worth",
+        "openInterestAnalysis": "participation measurement",
+        "spreadRelationships": "inter-contract connections",
+        "liquidityCharacteristics": "trading ease"
+      },
+      "SwapContract": {
+        "swaptype": "swap classification",
+        "underlyingvariables": "reference rates",
+        "typicalterms": "common features",
+        "pricingapproach": "valuation method",
+        "riskexposures": "potential hazards",
+        "commonapplications": "typical uses",
+        "documentationFramework": "legal structure",
+        "counterpartyRiskConsiderations": "default exposure",
+        "collateralArrangements": "margin requirements",
+        "terminationProvisions": "early ending conditions",
+        "marketQuotingConventions": "price expression standards",
+        "clearingMechanisms": "settlement processes",
+        "regulatoryTreatment": "oversight approach",
+        "accountingImplications": "financial reporting effects",
+        "relationshipToOtherInstruments": "comparative features"
+      },
+      "AlternativeInvestment": {
+        "category": "investment classification",
+        "structure": "organizational form",
+        "liquiditycharacteristics": "ease of trading",
+        "returndrivers": "sources of return",
+        "riskfactors": "sources of uncertainty",
+        "duediligenceconsiderations": "evaluation factors",
+        "correlationCharacteristics": "relationship with traditional assets",
+        "liquidityRiskProfile": [
+          "high",
+          "medium",
+          "low"
+        ],
+        "benchmarkType": "performance measurement standards",
+        "feeStructure": "cost components",
+        "minimumInvestmentRequirements": "access thresholds",
+        "investorQualificationCriteria": "eligibility standards",
+        "taxConsiderations": "fiscal implications",
+        "regulatoryFramework": "oversight structure",
+        "transparencyLevel": "information availability",
+        "governanceArrangements": "control mechanisms",
+        "operationalComplexities": "management challenges"
+      },
+      "RealEstate": {
+        "propertytype": "real estate classification",
+        "investmentvehicle": "ownership structure",
+        "incomecharacteristics": "cash flow pattern",
+        "valuationapproaches": "how to value",
+        "performancemetrics": "return measures",
+        "marketcyclesensitivity": "economic responsiveness",
+        "locationFactors": "geographical considerations",
+        "developmentStage": "construction/existing status",
+        "tenantProfileAnalysis": "occupant assessment",
+        "leaseStructureConsiderations": "rental agreement terms",
+        "operatingExpenseAnalysis": "cost evaluation",
+        "capitalExpenditureRequirements": "maintenance needs",
+        "financingOptions": "leverage approaches",
+        "taxAdvantages": "fiscal benefits",
+        "liquidityEnhancementStrategies": "exit facilitation",
+        "environmentalConsiderations": "sustainability factors"
+      },
+      "PrivateEquity": {
+        "strategytype": "investment approach",
+        "fundstructure": "organizational form",
+        "investmentstage": "company lifecycle point",
+        "valuecreationmechanisms": "improvement methods",
+        "performancemetrics": "return measures",
+        "exitstrategies": "liquidity events",
+        "dueDiligenceProcess": "evaluation methodology",
+        "governanceRights": "control provisions",
+        "capitalCallStructure": "funding mechanism",
+        "compensationArrangements": "fee components",
+        "investmentHorizon": "time frame expectations",
+        "portfolioCompanyManagement": "operational involvement",
+        "industrySpecialization": "sector focus",
+        "fundRaisingProcess": "capital acquisition",
+        "performanceAttribution": "return source analysis",
+        "secondaryMarketConsiderations": "interim liquidity options"
+      },
+      "HedgeFund": {
+        "strategyclassification": "investment approach",
+        "tradingapproaches": "market methods",
+        "feestructure": "compensation model",
+        "riskmanagementpractices": "risk control methods",
+        "performancecharacteristics": "return patterns",
+        "duediligencefactors": "evaluation criteria",
+        "leverageUtilization": "borrowing practices",
+        "liquidityTerms": "withdrawal conditions",
+        "transparencyLevel": "information disclosure",
+        "operationalInfrastructure": "business setup",
+        "counterpartyRelationships": "service provider arrangements",
+        "regulatoryRegistration": "oversight compliance",
+        "investorComposition": "client base characteristics",
+        "capacityConstraints": "size limitations",
+        "strategyDiversification": "approach variety",
+        "tailRiskConsiderations": "extreme event exposure"
+      },
+      "Commodity": {
+        "category": "commodity classification",
+        "physicalcharacteristics": "material properties",
+        "marketstructure": "trading organization",
+        "pricedeterminants": "value drivers",
+        "investmentvehicles": "access methods",
+        "rollyieldfactors": "futures curve effects",
+        "storageConsiderations": "cost and feasibility of storage"
+      }
+    },
+    "Volume6_PortfolioManagementAndWealthPlanning": {
+      "PortfolioManagementConcept": {
+        "name": "concept name",
+        "theoreticalfoundation": "underlying theories",
+        "practicalapplication": "real-world use",
+        "empiricalevidence": "supporting research",
+        "historicalDevelopment": "evolution over time",
+        "keyProponents": "major contributing theorists",
+        "criticalAssumptions": "underlying premises",
+        "limitationsAndCriticisms": "weaknesses and challenges",
+        "implementationFrameworks": "application methodologies",
+        "relationshipToOtherConcepts": "theoretical connections",
+        "marketEfficiencyImplications": "information processing relevance",
+        "investorBehaviorConsiderations": "psychological factors",
+        "regulatoryContext": "legal framework relevance",
+        "technologicalInfluences": "computational impacts",
+        "emergingExtensions": "evolving applications"
+      },
+      "RiskManagementFramework": {
+        "processSteps": "systematic approach to risk management",
+        "governanceStructure": "oversight responsibilities",
+        "riskToleranceMeasures": "acceptable risk levels",
+        "riskModificationTechniques": [
+          "prevention",
+          "avoidance",
+          "transfer"
+        ],
+        "identificationMethodologies": "risk discovery approaches",
+        "measurementTools": "quantification techniques",
+        "monitoringProcedures": "ongoing assessment processes",
+        "reportingRequirements": "communication protocols",
+        "contingencyPlanning": "emergency response preparation",
+        "stressTestingApproaches": "extreme scenario analysis",
+        "integratedRiskConsiderations": "correlation awareness",
+        "riskBudgetingFramework": "allocation methodology",
+        "modelRiskManagement": "estimation error handling",
+        "regulatoryCompliance": "oversight adherence",
+        "culturalElements": "organizational risk attitudes"
+      },
+      "InvestmentObjective": {
+        "category": "objective classification",
+        "typicalconstraints": "common limitations",
+        "measurementcriteria": "evaluation standards",
+        "policyimplications": "strategy impact",
+        "clientSpecificFactors": "individual considerations",
+        "timeHorizonConsiderations": "investment duration effects",
+        "prioritizationFramework": "goal ranking methodology",
+        "tradeoffAnalysis": "competing objective resolution",
+        "quantificationApproaches": "numerical target setting",
+        "lifecycleAdjustments": "age-based modifications",
+        "behavioralInfluences": "psychological factors",
+        "communicationStrategies": "client explanation approaches",
+        "monitoringFrequency": "review scheduling",
+        "adaptationTriggers": "revision catalysts",
+        "documentationRequirements": "record-keeping standards"
+      },
+      "AssetAllocationApproach": {
+        "approachtype": "allocation method",
+        "methodology": "implementation process",
+        "requiredinputs": "necessary data",
+        "rebalancingconsiderations": "adjustment factors",
+        "implementationchallenges": "execution difficulties",
+        "strategicVsTactical": "timeframe distinction",
+        "topDownVsBottomUp": "direction of analysis",
+        "optimizationTechniques": "mathematical approaches",
+        "constraintIncorporation": "limitation handling",
+        "factorExposureAnalysis": "systematic risk assessment",
+        "scenarioTestingFramework": "future possibility evaluation",
+        "macroeconomicIntegration": "economic forecast incorporation",
+        "implementationVehicles": "instrument selection",
+        "costEfficiencyConsiderations": "expense management",
+        "taxAwarenessFeatures": "fiscal impact minimization"
+      },
+      "RiskMeasure": {
+        "name": "measure name",
+        "calculationmethodology": "computation method",
+        "interpretationguidelines": "how to understand results",
+        "limitations": "constraints on usefulness",
+        "appropriateapplications": "when to use",
+        "distributionalAssumptions": "statistical premises",
+        "timeHorizonConsiderations": "measurement period",
+        "confidenceIntervalSelection": "probability threshold",
+        "extremeEventSensitivity": "tail risk capture",
+        "historicalVsForwardLooking": "data orientation",
+        "absoluteVsRelative": "benchmark relationship",
+        "decompositionCapabilities": "factor breakdown",
+        "aggregationProperties": "portfolio compilation",
+        "stabilityCharacteristics": "consistency over time",
+        "regulatoryRecognition": "official status"
+      },
+      "PortfolioConstructionTechnique": {
+        "name": "technique name",
+        "methodology": "implementation process",
+        "optimizationcriteria": "improvement standards",
+        "constrainthandling": "limitation management",
+        "implementationconsiderations": "execution factors",
+        "riskControlMechanisms": "uncertainty management",
+        "diversificationMeasurement": "concentration assessment",
+        "parameterEstimationApproaches": "input determination",
+        "robustnessEnhancements": "stability improvements",
+        "transactionCostModeling": "expense incorporation",
+        "taxEfficiencyFeatures": "fiscal optimization",
+        "liquidityManagement": "trading ease considerations",
+        "scalabilityProperties": "size adaptation",
+        "computationalRequirements": "processing needs",
+        "transparencyLevel": "understandability characteristics"
+      },
+      "PerformanceEvaluationMeasure": {
+        "name": "measure name",
+        "calculationmethodology": "computation method",
+        "interpretationguidelines": "how to understand results",
+        "riskadjustmentapproach": "risk normalization",
+        "limitations": "constraints on usefulness",
+        "benchmarkSelection": "comparison standard",
+        "timeHorizonConsiderations": "evaluation period",
+        "attributionCapabilities": "source identification",
+        "skillVsLuckAssessment": "randomness filtering",
+        "persistencePredictability": "continuation likelihood",
+        "presentationStandards": "reporting formats",
+        "clientCommunicationValue": "explanation utility",
+        "regulatoryCompliance": "required disclosures",
+        "industryBestPractices": "professional standards",
+        "gameabilityVulnerabilities": "manipulation risks"
+      },
+      "BehavioralBias": {
+        "name": "bias name",
+        "biascategory": "bias classification",
+        "description": "explanation of bias",
+        "investmentimplications": "impact on decisions",
+        "mitigationstrategies": "correction approaches",
+        "biasType": [
+          "cognitive",
+          "emotional"
+        ],
+        "marketAnomalyRelationship": "links biases to market inefficiencies",
+        "clientCommunicationStrategy": "addressing biases with clients",
+        "psychologicalFoundation": "mental process explanation",
+        "manifestationPatterns": "observable indicators",
+        "prevalenceFactors": "frequency determinants",
+        "contextualTriggers": "activation situations",
+        "interactionWithOtherBiases": "compounding effects",
+        "culturalVariations": "cross-cultural differences",
+        "evolutionaryOrigins": "adaptive purpose",
+        "neuroscientificEvidence": "brain function research",
+        "demographicPatterns": "population distribution",
+        "debiasingSucess": "correction effectiveness"
+      },
+      "ClientProfile": {
+        "riskToleranceAssessment": "quantitative and qualitative measures",
+        "investmentObjectives": [
+          "capital preservation",
+          "income",
+          "growth"
+        ],
+        "investmentConstraints": [
+          "liquidity",
+          "time horizon",
+          "tax"
+        ],
+        "lifecycleStage": "client's position in financial lifecycle",
+        "wealthOrigin": "source of assets",
+        "incomeCharacteristics": "earnings pattern",
+        "familyStructure": "household composition",
+        "successionPlans": "wealth transfer intentions",
+        "philanthropicInterests": "charitable goals",
+        "financialKnowledgeLevel": "investment sophistication",
+        "behavioralTendencies": "psychological patterns",
+        "professionalBackground": "career information",
+        "healthConsiderations": "medical factors",
+        "geographicFactors": "location influences",
+        "existingRelationships": "advisor connections",
+        "communicationPreferences": "interaction style"
+      },
+      "WealthManagementConcept": {
+        "name": "concept name",
+        "applicableclientsegments": "relevant customers",
+        "implementationapproach": "execution method",
+        "regulatoryconsiderations": "compliance factors",
+        "holisticPlanningElements": "comprehensive components",
+        "goalPrioritizationFramework": "objective ranking",
+        "intergenerationalConsiderations": "family continuity",
+        "businessOwnershipFactors": "enterprise implications",
+        "internationalDimensions": "cross-border issues",
+        "assetProtectionStrategies": "wealth preservation",
+        "privacyConsiderations": "confidentiality approaches",
+        "reputationalManagement": "public perception",
+        "professionalNetworkCoordination": "advisor integration",
+        "technologyUtilization": "digital tool application",
+        "serviceModelOptions": "delivery frameworks",
+        "valuationMetrics": "worth assessment"
+      },
+      "TaxConsideration": {
+        "aspect": "tax issue",
+        "applicablejurisdictions": "relevant locations",
+        "planningstrategies": "tax management",
+        "investmentimplications": "impact on decisions",
+        "deferralOpportunities": "postponement approaches",
+        "lossTaxHarvestingTechniques": "negative return utilization",
+        "entityStructureOptions": "organizational forms",
+        "internationalTaxComplexities": "cross-border issues",
+        "estateTaxMinimization": "inheritance optimization",
+        "assetLocationStrategies": "account type placement",
+        "taxLotSelectionMethods": "specific share identification",
+        "alternativeMinimumTaxConsiderations": "AMT management",
+        "characterizationPlanning": "income type control",
+        "documentationRequirements": "record-keeping needs",
+        "complianceObligations": "filing responsibilities",
+        "legislativeRiskAssessment": "law change exposure"
+      },
+      "EstateWealthTransfer": {
+        "technique": "transfer method",
+        "suitablescenarios": "appropriate situations",
+        "implementationsteps": "execution process",
+        "legalconsiderations": "legal requirements",
+        "taxEfficiency": "fiscal optimization",
+        "controlRetentionFeatures": "influence preservation",
+        "beneficiaryProtections": "recipient safeguards",
+        "creditorProtectionAspects": "asset shielding",
+        "flexibilityProvisions": "adaptation capabilities",
+        "privacyCharacteristics": "confidentiality level",
+        "complexityFactors": "implementation difficulty",
+        "maintenanceRequirements": "ongoing obligations",
+        "jurisdictionalVariations": "location differences",
+        "documentationStandards": "record requirements",
+        "fiduciaryResponsibilities": "trustee obligations",
+        "contingencyProvisions": "backup arrangements"
+      },
+      "RetirementPlan": {
+        "plantype": "plan classification",
+        "regulatoryframework": "governing rules",
+        "contributioncharacteristics": "funding features",
+        "distributionrules": "withdrawal requirements",
+        "investmentconsiderations": "portfolio factors",
+        "taxTreatment": "fiscal characteristics",
+        "employerResponsibilities": "sponsor obligations",
+        "participantRights": "beneficiary entitlements",
+        "fiduciaryStandards": "management requirements",
+        "reportingObligations": "disclosure mandates",
+        "planDesignOptions": "structure alternatives",
+        "portabilityFeatures": "transfer capabilities",
+        "beneficiaryDesignations": "inheritance provisions",
+        "requiredMinimumDistributions": "forced withdrawal rules",
+        "earlyWithdrawalProvisions": "premature access options",
+        "planTerminationProcedures": "ending processes",
+        "loanProvisions": "borrowing capabilities",
+        "hardshipWithdrawalRules": "emergency access"
+      },
+      "InsuranceStrategy": {
+        "coverageType": "protection classification",
+        "riskMitigationFocus": "hazard addressed",
+        "policyStructure": "contract framework",
+        "underwritingConsiderations": "approval factors",
+        "premiumDeterminants": "cost factors",
+        "benefitTriggers": "payout conditions",
+        "taxTreatment": "fiscal characteristics",
+        "wealthManagementIntegration": "financial plan role",
+        "ownershipOptions": "title alternatives",
+        "beneficiaryConsiderations": "recipient planning",
+        "cashValueFeatures": "investment components",
+        "policyLoanProvisions": "borrowing capabilities",
+        "replacementAnalysis": "policy comparison",
+        "regulatoryProtections": "legal safeguards",
+        "carrierSelectionCriteria": "provider assessment",
+        "claimsProcessConsiderations": "benefit access"
+      },
+      "FinancialPlanningProcess": {
+        "stageDescription": "process stage overview",
+        "keyActivities": "major steps",
+        "stakeholderResponsibilities": "role assignments",
+        "decisionMilestones": "critical junctures",
+        "resourceRequirements": "support needs",
+        "timelineEstimates": "expected durations",
+        "riskConsiderations": "potential pitfalls",
+        "communicationProtocols": "information sharing",
+        "documentationStandards": "record-keeping guidelines",
+        "evaluationMetrics": "performance indicators"
+      }
+    },
+    "Volume7_QuantitativeMethodsAndExamStructure": {
+      "QuantitativeMethod": {
+        "name": "method name",
+        "applicableproblems": "relevant situations",
+        "implementationsteps": "execution process",
+        "interpretationguidance": "how to understand results",
+        "limitations": "constraints on usefulness",
+        "mathematicalFoundation": "theoretical basis",
+        "assumptionRequirements": "necessary conditions",
+        "dataRequirements": "input needs",
+        "computationalComplexity": "processing difficulty",
+        "sensitivityAnalysisApproach": "robustness testing",
+        "errorEstimationTechniques": "accuracy assessment",
+        "softwareImplementation": "programming considerations",
+        "commonPitfalls": "frequent mistakes",
+        "alternativeApproaches": "competing methods",
+        "financialApplications": "investment uses",
+        "historicalDevelopment": "evolution over time"
+      },
+      "StatisticalConcept": {
+        "name": "concept name",
+        "definition": "explanation of concept",
+        "formula": "calculation method",
+        "assumptionrequirements": "necessary conditions",
+        "investmentapplications": "financial uses",
+        "distributionalProperties": "probability characteristics",
+        "estimationTechniques": "parameter determination",
+        "hypothesisTestingFramework": "significance assessment",
+        "interpretationGuidelines": "meaning explanation",
+        "limitationsAndCaveats": "usage constraints",
+        "visualizationApproaches": "graphical representation",
+        "relationshipToOtherConcepts": "statistical connections",
+        "softwareImplementation": "computational tools",
+        "commonMisconceptions": "frequent misunderstandings",
+        "advancedExtensions": "sophisticated variations"
+      },
+      "ProbabilityDistribution": {
+        "distributionname": "distribution identifier",
+        "parameters": "defining values",
+        "characteristics": "key properties",
+        "financialapplications": "uses in finance",
+        "analyticalvalue": "usefulness for analysis",
+        "momentProperties": "statistical measures",
+        "generatingFunctions": "mathematical representations",
+        "estimationMethods": "parameter determination",
+        "goodnessFitTests": "appropriateness assessment",
+        "relationToOtherDistributions": "mathematical connections",
+        "transformationProperties": "conversion characteristics",
+        "limitingBehavior": "asymptotic properties",
+        "simulationTechniques": "random generation",
+        "empiricalEvidence": "real-world observations",
+        "historicalDevelopment": "evolution over time"
+      },
+      "RegressionAnalysis": {
+        "modeltype": "regression approach",
+        "specificationapproach": "model design",
+        "estimationmethod": "parameter calculation",
+        "diagnostictests": "validation checks",
+        "interpretationguidelines": "how to understand results",
+        "commonpitfalls": "frequent errors",
+        "assumptionVerification": "premise checking",
+        "variableSelectionCriteria": "predictor inclusion",
+        "multicollinearityHandling": "correlation management",
+        "outlierTreatment": "extreme value approach",
+        "heteroscedasticityCorrection": "variance stabilization",
+        "autocorrelationAdjustment": "time dependence handling",
+        "predictionIntervalConstruction": "forecast range",
+        "crossValidationTechniques": "out-of-sample testing",
+        "causalInferenceConsiderations": "endogeneity issues",
+        "nonlinearExtensions": "flexible functional forms"
+      },
+      "TimeSeries": {
+        "modeltype": "time series approach",
+        "patterncharacteristics": "data features",
+        "estimationapproach": "parameter calculation",
+        "forecastingapplication": "prediction use",
+        "diagnosticcriteria": "validation standards",
+        "stationarityRequirements": "stability conditions",
+        "seasonalityHandling": "cyclical adjustment",
+        "trendIdentification": "directional movement",
+        "volatilityModeling": "variance dynamics",
+        "structuralBreakDetection": "regime change identification",
+        "multivariateDependencies": "cross-series relationships",
+        "impulseResponseAnalysis": "shock propagation",
+        "forecastEvaluationMetrics": "prediction accuracy",
+        "rollingWindowEstimation": "adaptive parameter updating",
+        "frequencyDomainAnalysis": "spectral decomposition",
+        "bayesianImplementations": "prior information incorporation"
+      },
+      "MachineLearning": {
+        "technique": "ML approach",
+        "algorithmtype": "computational method",
+        "trainingapproach": "learning process",
+        "validationmethods": "testing approaches",
+        "financialapplications": "uses in finance",
+        "implementationconsiderations": "execution factors",
+        "hyperparameterTuning": "configuration optimization",
+        "featureEngineeringTechniques": "input transformation",
+        "dimensionalityReductionMethods": "variable compression",
+        "overfittingPrevention": "generalization enhancement",
+        "interpretabilityApproaches": "explanation methods",
+        "computationalRequirements": "processing needs",
+        "ensembleTechniques": "model combination",
+        "onlineLearningCapabilities": "incremental updating",
+        "transferLearningPotential": "cross-domain application",
+        "ethicalConsiderations": "fairness and bias"
+      },
+      "ExamQuestion": {
+        "questionid": "question identifier",
+        "questiontext": "text of question",
+        "difficulty": "complexity level",
+        "topic": "subject area",
+        "requiredcalculation": "math needed",
+        "bloomlevel": "cognitive demand",
+        "learningObjectiveReference": "curriculum goal connection",
+        "conceptualKnowledgeRequired": "theoretical understanding",
+        "procedualKnowledgeRequired": "process application",
+        "commonMisconceptions": "frequent errors",
+        "discriminationIndex": "differentiation power",
+        "responseOptions": "answer choices",
+        "scoringRubric": "grading criteria",
+        "timeRequirement": "completion duration",
+        "prerequisiteKnowledge": "foundation requirements",
+        "itemAnalysisStatistics": "performance metrics"
+      },
+      "Formula": {
+        "name": "formula name",
+        "expression": "mathematical representation",
+        "variabledefintions": "symbol meanings",
+        "applicationcontext": "when to use",
+        "commonmistakes": "frequent errors",
+        "derivationLogic": "development reasoning",
+        "unitConsistency": "measurement compatibility",
+        "dimensionalAnalysis": "physical quantity verification",
+        "approximationValidity": "simplification boundaries",
+        "specialCaseConsiderations": "exception handling",
+        "numericalStability": "computation reliability",
+        "sensitivityCharacteristics": "input impact assessment",
+        "historicalDevelopment": "evolution over time",
+        "alternativeFormulations": "equivalent expressions",
+        "crossDisciplinaryApplications": "uses in other fields"
+      },
+      "PracticeExample": {
+        "exampleid": "example identifier",
+        "scenario": "situation description",
+        "solutionapproach": "solving method",
+        "keyinsights": "important takeaways",
+        "commonmisconceptions": "typical misunderstandings",
+        "difficultyLevel": "complexity classification",
+        "prerequisiteKnowledge": "required background",
+        "conceptualConnections": "theoretical links",
+        "calculationSteps": "mathematical process",
+        "alternativeApproaches": "different solution methods",
+        "examinationRelevance": "test preparation value",
+        "practicalApplications": "real-world connections",
+        "followUpQuestions": "extension inquiries",
+        "learningObjectiveAlignment": "curriculum goal connection",
+        "instructionalNotes": "teaching guidance"
+      },
+      "NumericalMethod": {
+        "methodName": "technique identifier",
+        "algorithmDescription": "procedural explanation",
+        "convergenceProperties": "solution approach behavior",
+        "errorBounds": "accuracy limitations",
+        "implementationRequirements": "execution needs",
+        "computationalComplexity": "processing demands",
+        "stabilityCharacteristics": "reliability factors",
+        "applicabilityConditions": "appropriate scenarios",
+        "financialApplications": "investment uses",
+        "approximationQuality": "precision assessment",
+        "comparativeAdvantages": "benefits vs alternatives",
+        "softwareImplementation": "programming considerations",
+        "historicalDevelopment": "evolution over time",
+        "numericalExamples": "illustrative calculations",
+        "commonPitfalls": "frequent mistakes"
+      },
+      "OptimizationTechnique": {
+        "techniqueName": "method identifier",
+        "problemFormulation": "mathematical structure",
+        "algorithmicApproach": "solution procedure",
+        "constraintHandling": "limitation management",
+        "convergenceCriteria": "termination conditions",
+        "localVsGlobalProperties": "solution optimality",
+        "sensitivityAnalysis": "parameter impact",
+        "computationalRequirements": "processing demands",
+        "financialApplications": "investment uses",
+        "multiobjectiveExtensions": "competing goal handling",
+        "stochasticConsiderations": "uncertainty incorporation",
+        "dynamicAdaptations": "time-varying versions",
+        "implementationChallenges": "practical difficulties",
+        "softwareTools": "computational resources",
+        "benchmarkPerformance": "efficiency metrics"
+      },
+      "MonteCarloSimulation": {
+        "simulationDesign": "experiment structure",
+        "randomGenerationMethod": "stochastic process",
+        "samplingTechnique": "selection approach",
+        "varianceReductionMethods": "efficiency enhancement",
+        "confidenceIntervalConstruction": "precision measurement",
+        "convergenceAssessment": "stability evaluation",
+        "distributionalAssumptions": "probability models",
+        "parameterCalibration": "input determination",
+        "scenarioSpecification": "situation definition",
+        "outputAnalysisTechniques": "result interpretation"
+      }
+    }
+  },
+  "Relationships": {
+    "REPLICATES": {
+      "description": "Links derivative instruments to their underlying assets",
+      "domain": [
+        "DerivativeInstrument"
+      ],
+      "range": [
+        "EquityInvestment",
+        "FixedIncomeInstrument",
+        "Commodity",
+        "Currency"
+      ],
+      "properties": {
+        "replicationAccuracy": "precision of match",
+        "costEfficiency": "expense comparison",
+        "riskFactors": "potential divergence sources"
+      },
+      "examples": [
+        "Option replicates stock exposure",
+        "Future replicates commodity position"
+      ]
+    },
+    "HEDGES": {
+      "description": "Connects derivatives to specific risk types",
+      "domain": [
+        "DerivativeInstrument",
+        "FixedIncomeInstrument"
+      ],
+      "range": [
+        "MarketRisk",
+        "CreditRisk",
+        "InterestRateRisk",
+        "CurrencyRisk",
+        "CommodityRisk"
+      ],
+      "properties": {
+        "hedgeEffectiveness": "protection quality",
+        "implementationCost": "execution expense",
+        "basisRisk": "imperfection measure",
+        "timeHorizon": "protection duration"
+      },
+      "examples": [
+        "Interest rate swap hedges duration risk",
+        "Put option hedges market risk"
+      ]
+    },
+    "CORRELATES_WITH": {
+      "description": "Links alternative investments to traditional asset classes",
+      "domain": [
+        "AlternativeInvestment",
+        "EquityInvestment",
+        "FixedIncomeInstrument",
+        "Commodity"
+      ],
+      "range": [
+        "AlternativeInvestment",
+        "EquityInvestment",
+        "FixedIncomeInstrument",
+        "Commodity"
+      ],
+      "properties": {
+        "correlationCoefficient": "statistical relationship measure",
+        "stabilityMeasure": "consistency over time",
+        "conditionalBehavior": "relationship during stress periods",
+        "causalFactors": "underlying relationship drivers"
+      },
+      "examples": [
+        "Real estate correlates with inflation",
+        "Hedge funds correlate with equity markets"
+      ]
+    },
+    "CONSTRAINS": {
+      "description": "Connects investment constraints to investment strategies",
+      "domain": [
+        "InvestmentConstraint",
+        "RegulatoryRequirement",
+        "ClientPreference"
+      ],
+      "range": [
+        "InvestmentStrategy",
+        "AssetAllocationApproach",
+        "SecuritySelection"
+      ],
+      "properties": {
+        "restrictionSeverity": "limitation degree",
+        "implementationComplexity": "compliance difficulty",
+        "performanceImpact": "return effect",
+        "monitoringRequirements": "oversight needs"
+      },
+      "examples": [
+        "Liquidity needs constrain private equity allocation",
+        "Tax considerations constrain trading frequency"
+      ]
+    },
+    "REQUIRES": {
+      "description": "Links investment objectives to necessary allocation approaches",
+      "domain": [
+        "InvestmentObjective",
+        "ClientProfile"
+      ],
+      "range": [
+        "AssetAllocationApproach",
+        "SecuritySelection",
+        "RiskManagementFramework"
+      ],
+      "properties": {
+        "necessityDegree": "requirement strength",
+        "alternativeOptions": "substitute approaches",
+        "implementationPriority": "execution sequence",
+        "successCriteria": "achievement measures"
+      },
+      "examples": [
+        "Capital preservation requires conservative allocation",
+        "Income generation requires dividend-focused strategy"
+      ]
+    },
+    "VIOLATES": {
+      "description": "Connects specific actions to ethical standard violations",
+      "domain": [
+        "ProfessionalAction",
+        "InvestmentPractice",
+        "ClientInteraction"
+      ],
+      "range": [
+        "EthicalStandard",
+        "ProfessionalConduct",
+        "RegulatoryRequirement"
+      ],
+      "properties": {
+        "severityLevel": "infraction seriousness",
+        "intentionFactor": "deliberate vs. accidental",
+        "mitigatingCircumstances": "contextual factors",
+        "remedialActions": "correction approaches"
+      },
+      "examples": [
+        "Front-running violates duty to clients",
+        "Misrepresentation violates integrity standards"
+      ]
+    },
+    "COMPLIES_WITH": {
+      "description": "Links performance presentation to GIPS standards",
+      "domain": [
+        "PerformancePresentation",
+        "InvestmentReport",
+        "ClientCommunication"
+      ],
+      "range": [
+        "GIPSStandard",
+        "RegulatoryRequirement",
+        "EthicalStandard"
+      ],
+      "properties": {
+        "complianceLevel": "adherence degree",
+        "verificationStatus": "independent confirmation",
+        "disclosureCompleteness": "transparency measure",
+        "documentationQuality": "record adequacy"
+      },
+      "examples": [
+        "Composite construction complies with GIPS methodology",
+        "Performance calculation complies with time-weighted standards"
+      ]
+    },
+    "IMPACTS": {
+      "description": "Connects economic indicators to asset class performance",
+      "domain": [
+        "EconomicIndicator",
+        "MonetaryPolicy",
+        "FiscalPolicy"
+      ],
+      "range": [
+        "EquityInvestment",
+        "FixedIncomeInstrument",
+        "AlternativeInvestment",
+        "Commodity"
+      ],
+      "properties": {
+        "impactMagnitude": "effect size",
+        "timeHorizon": "effect duration",
+        "directionalNature": "positive or negative",
+        "transmissionMechanism": "causal pathway"
+      },
+      "examples": [
+        "Interest rates impact bond valuations",
+        "GDP growth impacts equity returns"
+      ]
+    },
+    "INFLUENCES": {
+      "description": "Links monetary policy to interest rates and economic variables",
+      "domain": [
+        "MonetaryPolicy",
+        "CentralBankAction",
+        "FiscalPolicy"
+      ],
+      "range": [
+        "InterestRate",
+        "InflationRate",
+        "ExchangeRate",
+        "EconomicGrowth"
+      ],
+      "properties": {
+        "influencePower": "effect strength",
+        "lagStructure": "timing pattern",
+        "persistenceDuration": "effect longevity",
+        "uncertaintyLevel": "predictability measure"
+      },
+      "examples": [
+        "Quantitative easing influences long-term rates",
+        "Reserve requirements influence money supply"
+      ]
+    },
+    "AFFECTS": {
+      "description": "Connects inflation to bond valuation and purchasing power",
+      "domain": [
+        "InflationRate",
+        "DeflationRisk",
+        "StagflationScenario"
+      ],
+      "range": [
+        "BondValuation",
+        "EquityValuation",
+        "PurchasingPower",
+        "RealReturn"
+      ],
+      "properties": {
+        "sensitivityMeasure": "response magnitude",
+        "adaptationCapability": "adjustment ability",
+        "thresholdEffects": "non-linear responses",
+        "expectationComponent": "anticipatory element"
+      },
+      "examples": [
+        "Inflation affects fixed coupon bond values",
+        "Inflation affects real purchasing power"
+      ]
+    },
+    "MITIGATES": {
+      "description": "Links risk management techniques to specific risk types",
+      "domain": [
+        "RiskManagementTechnique",
+        "HedgingStrategy",
+        "DiversificationApproach"
+      ],
+      "range": [
+        "MarketRisk",
+        "CreditRisk",
+        "LiquidityRisk",
+        "OperationalRisk",
+        "SystemicRisk"
+      ],
+      "properties": {
+        "effectivenessLevel": "protection degree",
+        "implementationCost": "execution expense",
+        "sideEffects": "unintended consequences",
+        "scalabilityCharacteristics": "size adaptability"
+      },
+      "examples": [
+        "Diversification mitigates idiosyncratic risk",
+        "Stop-loss orders mitigate downside risk"
+      ]
+    },
+    "MEASURES": {
+      "description": "Connects risk metrics to portfolio risk dimensions",
+      "domain": [
+        "RiskMeasure",
+        "PerformanceEvaluationMeasure",
+        "FinancialRatio"
+      ],
+      "range": [
+        "PortfolioRisk",
+        "MarketRisk",
+        "CreditRisk",
+        "LiquidityRisk",
+        "VolatilityExposure"
+      ],
+      "properties": {
+        "measurementAccuracy": "precision level",
+        "comprehensivenessLevel": "coverage completeness",
+        "forwardLookingCapability": "predictive power",
+        "interpretationClarity": "understanding ease"
+      },
+      "examples": [
+        "Value-at-Risk measures tail risk",
+        "Duration measures interest rate sensitivity"
+      ]
+    },
+    "DIVERSIFIES": {
+      "description": "Links asset combinations to portfolio risk reduction",
+      "domain": [
+        "AssetClass",
+        "SecurityType",
+        "InvestmentStrategy"
+      ],
+      "range": [
+        "PortfolioRisk",
+        "VolatilityExposure",
+        "DrawdownMagnitude",
+        "ReturnStability"
+      ],
+      "properties": {
+        "diversificationBenefit": "risk reduction amount",
+        "correlationDynamics": "relationship stability",
+        "efficientFrontierImprovement": "optimization enhancement",
+        "stressTestPerformance": "crisis period behavior"
+      },
+      "examples": [
+        "International equities diversify domestic market risk",
+        "Alternatives diversify traditional portfolio exposure"
+      ]
+    },
+    "PREREQUISITE_FOR": {
+      "description": "Connects foundational concepts to advanced topics",
+      "domain": [
+        "LearningObjective",
+        "EconomicConcept",
+        "QuantitativeMethod",
+        "FinancialReportingElement"
+      ],
+      "range": [
+        "LearningObjective",
+        "ValuationModel",
+        "PortfolioConstructionTechnique",
+        "DerivativeInstrument"
+      ],
+      "properties": {
+        "necessityLevel": "requirement strength",
+        "sequencingImportance": "order significance",
+        "knowledgeGapRisk": "missing prerequisite danger",
+        "applicationFrequency": "usage commonality"
+      },
+      "examples": [
+        "Time value of money is prerequisite for DCF valuation",
+        "Probability concepts are prerequisite for options pricing"
+      ]
+    },
+    "BUILDS_ON": {
+      "description": "Shows knowledge progression and conceptual hierarchy",
+      "domain": [
+        "LearningObjective",
+        "ValuationModel",
+        "RiskMeasure",
+        "PortfolioConstructionTechnique"
+      ],
+      "range": [
+        "LearningObjective",
+        "ValuationModel",
+        "RiskMeasure",
+        "PortfolioConstructionTechnique"
+      ],
+      "properties": {
+        "extensionNature": "enhancement type",
+        "complexityIncrease": "sophistication jump",
+        "practicalAdvantage": "application benefit",
+        "theoreticalCoherence": "conceptual alignment"
+      },
+      "examples": [
+        "CAPM builds on diversification principles",
+        "Multi-factor models build on single-factor models"
+      ]
+    },
+    "FREQUENTLY_TESTED_WITH": {
+      "description": "Identifies common exam combinations of topics",
+      "domain": [
+        "LearningObjective",
+        "EconomicConcept",
+        "ValuationModel",
+        "EthicalStandard"
+      ],
+      "range": [
+        "LearningObjective",
+        "EconomicConcept",
+        "ValuationModel",
+        "EthicalStandard"
+      ],
+      "properties": {
+        "co-occurrenceFrequency": "appearance rate",
+        "integrationLevel": "connection depth",
+        "examinerRationale": "testing logic",
+        "preparationPriority": "study importance"
+      },
+      "examples": [
+        "Duration frequently tested with convexity",
+        "Ethics frequently tested with GIPS standards"
+      ]
+    },
+    "CALCULATES": {
+      "description": "Links formulas to financial metrics they compute",
+      "domain": [
+        "Formula",
+        "QuantitativeMethod",
+        "ValuationModel"
+      ],
+      "range": [
+        "FinancialRatio",
+        "RiskMeasure",
+        "ReturnMetric",
+        "ValuationMultiple"
+      ],
+      "properties": {
+        "computationalComplexity": "calculation difficulty",
+        "inputRequirements": "necessary data",
+        "precisionLevel": "accuracy degree",
+        "alternativeFormulations": "equivalent approaches"
+      },
+      "examples": [
+        "WACC formula calculates cost of capital",
+        "Sharpe ratio formula calculates risk-adjusted return"
+      ]
+    },
+    "CONTRADICTS": {
+      "description": "Identifies opposing theories or inconsistent concepts",
+      "domain": [
+        "EconomicConcept",
+        "ValuationModel",
+        "InvestmentTheory",
+        "MarketHypothesis"
+      ],
+      "range": [
+        "EconomicConcept",
+        "ValuationModel",
+        "InvestmentTheory",
+        "MarketHypothesis"
+      ],
+      "properties": {
+        "contradictionNature": "disagreement type",
+        "reconciliationPossibility": "resolution potential",
+        "empiricalEvidence": "supporting research",
+        "practicalImplications": "application consequences"
+      },
+      "examples": [
+        "Efficient market hypothesis contradicts technical analysis",
+        "Keynesian theory contradicts monetarist views"
+      ]
+    },
+    "REGULATES": {
+      "description": "Connects regulatory bodies to financial activities they oversee",
+      "domain": [
+        "RegulatoryBody",
+        "LegalFramework",
+        "IndustryStandard"
+      ],
+      "range": [
+        "InvestmentActivity",
+        "FinancialReporting",
+        "MarketPractice",
+        "AdvisorConduct"
+      ],
+      "properties": {
+        "jurisdictionalScope": "authority range",
+        "enforcementMechanisms": "compliance processes",
+        "penaltyStructures": "consequence frameworks",
+        "transparencyRequirements": "disclosure standards"
+      },
+      "examples": [
+        "SEC regulates market practices",
+        "FINRA regulates broker-dealer activities"
+      ]
+    }
+  }
+}

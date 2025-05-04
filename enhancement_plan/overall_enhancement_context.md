@@ -19,16 +19,3 @@
 *   **Configuration:** Integrate new settings (feature flags, thresholds, schema path) into LightRAG's existing `.env`/config system.
 *   **Robustness:** Implement robust error handling, especially for external calls (LLMs, file processing).
 *   **Mandatory Testing:** All newly generated or modified code *must* be accompanied by comprehensive unit and integration tests (`pytest`) that **pass cleanly without warnings or skips**.
-
-**Current Task Context:** *(You will add the specific AI Prompt from the plan here)*
-
----
-
-**How to Use:**
-
-1.  Copy this entire summary block.
-2.  Before pasting one of the specific AI Prompts from the phased plan (e.g., "Task 1.1: Advanced PDF Parsing"), paste this overview summary first.
-3.  Then, paste the specific AI Prompt for the task below the summary.
-4.  Provide any additional required context like file contents or code snippets as requested by the specific prompt or the AI assistant.
-
-This will give the AI the necessary background for each request, hopefully leading to more accurate and relevant code generation within the constraints of the LightRAG project.

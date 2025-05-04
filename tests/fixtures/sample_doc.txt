@@ -1,0 +1,12 @@
+This is a sample document for testing LightRAG.
+
+It contains multiple paragraphs to test the chunking functionality.
+
+LightRAG is a lightweight Knowledge Graph Retrieval-Augmented Generation system.
+It supports multiple LLM backends and provides efficient document processing.
+
+The system uses a schema-driven approach to build knowledge graphs from text documents.
+Entities and relationships are extracted based on the schema definition.
+
+This sample document should be used for testing the basic functionality of LightRAG,
+including document loading, chunking, and retrieval.
