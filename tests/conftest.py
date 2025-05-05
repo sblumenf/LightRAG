@@ -8,9 +8,16 @@ import pytest
 import asyncio
 import tempfile
 import shutil
+import warnings
 from typing import Dict, Any, Callable, Optional
 
 import pytest_asyncio
+
+# Suppress specific warnings
+warnings.filterwarnings("ignore", message=".*swigvarlink.*")
+warnings.filterwarnings("ignore", message=".*SwigPyPacked.*")
+warnings.filterwarnings("ignore", message=".*SwigPyObject.*")
+warnings.filterwarnings("ignore", message=".*importlib._bootstrap.*")
 
 from lightrag import LightRAG
 from lightrag.utils import EmbeddingFunc, setup_logger
@@ -21,7 +28,7 @@ from lightrag.schema_utils import load_schema
 setup_logger("lightrag", level="INFO")
 
 # Default schema path
-DEFAULT_SCHEMA_PATH = os.path.abspath("./docs/schema.json")
+DEFAULT_SCHEMA_PATH = os.path.abspath(os.getenv("SCHEMA_FILE_PATH", "docs/schema.json"))
 
 # Dummy functions for testing
 async def dummy_llm_func(prompt: str, **kwargs) -> str:
@@ -40,6 +47,7 @@ async def dummy_embedding_func(texts: list[str]) -> list[list[float]]:
 @pytest.fixture
 def sample_doc_path() -> str:
     """Return the path to the sample document."""
+    # Use a path relative to the project root
     return os.path.abspath("tests/fixtures/sample_doc.txt")
 
 

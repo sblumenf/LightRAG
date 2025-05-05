@@ -1,6 +1,8 @@
 from __future__ import annotations
 import weakref
 
+# Import numpy first to avoid reloading warning
+import numpy as np
 import asyncio
 import html
 import csv
@@ -14,7 +16,6 @@ from functools import wraps
 from hashlib import md5
 from typing import Any, Protocol, Callable, TYPE_CHECKING, List
 import xml.etree.ElementTree as ET
-import numpy as np
 from lightrag.prompt import PROMPTS
 from dotenv import load_dotenv
 

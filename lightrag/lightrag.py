@@ -68,6 +68,7 @@ from .utils import (
     logger,
 )
 from .types import KnowledgeGraph
+from .config_loader import get_enhanced_config
 from dotenv import load_dotenv
 
 # use the .env that is inside the current folder
@@ -236,6 +237,45 @@ class LightRAG:
 
     enable_llm_cache_for_entity_extract: bool = field(default=True)
     """If True, enables caching for entity extraction steps to reduce LLM costs."""
+
+    # Schema Configuration
+    # ---
+
+    schema_file_path: str = field(default=get_enhanced_config().schema_file_path)
+    """Path to the schema.json file."""
+
+    # Feature Flags
+    # ---
+
+    enable_diagram_analysis: bool = field(default=get_enhanced_config().enable_diagram_analysis)
+    """If True, enables diagram analysis during document processing."""
+
+    enable_formula_analysis: bool = field(default=get_enhanced_config().enable_formula_analysis)
+    """If True, enables formula analysis during document processing."""
+
+    enable_cot: bool = field(default=get_enhanced_config().enable_cot)
+    """If True, enables Chain-of-Thought reasoning during query generation."""
+
+    # Entity Resolution
+    # ---
+
+    entity_resolution_name_threshold: float = field(default=get_enhanced_config().entity_resolution_name_threshold)
+    """Threshold for entity name similarity during entity resolution."""
+
+    entity_resolution_embedding_threshold: float = field(default=get_enhanced_config().entity_resolution_embedding_threshold)
+    """Threshold for entity embedding similarity during entity resolution."""
+
+    entity_resolution_context_threshold: float = field(default=get_enhanced_config().entity_resolution_context_threshold)
+    """Threshold for entity context similarity during entity resolution."""
+
+    entity_resolution_merge_weight_property: float = field(default=get_enhanced_config().entity_resolution_merge_weight_property)
+    """Weight for property similarity during entity resolution merging."""
+
+    # Diagram Settings
+    # ---
+
+    diagram_detection_threshold: float = field(default=get_enhanced_config().diagram_detection_threshold)
+    """Threshold for diagram detection during document processing."""
 
     # Extensions
     # ---

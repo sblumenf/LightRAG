@@ -131,6 +131,24 @@ For a streaming response implementation example, please see `examples/lightrag_o
 
 **Note 2**: Only `lightrag_openai_demo.py` and `lightrag_openai_compatible_demo.py` are officially supported sample codes. Other sample files are community contributions that haven't undergone full testing and optimization.
 
+## Running Tests
+
+To run tests without executing Ollama-related tests (which require a running Ollama server), use the provided script:
+
+```bash
+# Run all tests except Ollama tests
+./run_tests.sh
+```
+
+Alternatively, you can use pytest directly with the `-k` option:
+
+```bash
+# Activate your virtual environment if needed
+source venv/bin/activate
+# Run all tests except those with "ollama" in their name
+python -m pytest -k "not test_lightrag_ollama_chat"
+```
+
 ## Programing with LightRAG Core
 
 ### A Simple Program

@@ -1,0 +1,56 @@
+{
+  "entities": [
+    {
+      "name": "Document",
+      "properties": [
+        {"name": "title", "type": "string", "required": true},
+        {"name": "content", "type": "string", "required": true},
+        {"name": "author", "type": "string", "required": false},
+        {"name": "date", "type": "date", "required": false}
+      ]
+    },
+    {
+      "name": "Concept",
+      "properties": [
+        {"name": "name", "type": "string", "required": true},
+        {"name": "description", "type": "string", "required": false}
+      ]
+    },
+    {
+      "name": "Person",
+      "properties": [
+        {"name": "name", "type": "string", "required": true},
+        {"name": "role", "type": "string", "required": false},
+        {"name": "organization", "type": "string", "required": false}
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "MENTIONS",
+      "source": "Document",
+      "target": "Concept",
+      "properties": [
+        {"name": "context", "type": "string", "required": false},
+        {"name": "relevance", "type": "float", "required": false}
+      ]
+    },
+    {
+      "name": "AUTHORED_BY",
+      "source": "Document",
+      "target": "Person",
+      "properties": [
+        {"name": "year", "type": "integer", "required": false}
+      ]
+    },
+    {
+      "name": "RELATED_TO",
+      "source": "Concept",
+      "target": "Concept",
+      "properties": [
+        {"name": "relationship_type", "type": "string", "required": false},
+        {"name": "strength", "type": "float", "required": false}
+      ]
+    }
+  ]
+}
