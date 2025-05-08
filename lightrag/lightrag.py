@@ -21,6 +21,8 @@ from typing import (
     Dict,
 )
 
+from .schema import SchemaLoader, SchemaClassifier
+
 from lightrag.kg import (
     STORAGES,
     verify_storage_implementation,
@@ -129,13 +131,16 @@ class LightRAG:
     # Text chunking
     # ---
 
-    chunk_token_size: int = field(default=int(os.getenv("CHUNK_SIZE", 1200)))
+    chunk_token_size: int = field(default=get_enhanced_config().chunk_size)
     """Maximum number of tokens per text chunk when splitting documents."""
 
     chunk_overlap_token_size: int = field(
-        default=int(os.getenv("CHUNK_OVERLAP_SIZE", 100))
+        default=get_enhanced_config().chunk_overlap_size
     )
     """Number of overlapping tokens between consecutive text chunks to preserve context."""
+
+    chunking_strategy: str = field(default=get_enhanced_config().chunking_strategy)
+    """Strategy to use for chunking text. Options are 'token' or 'paragraph'."""
 
     tokenizer: Optional[Tokenizer] = field(default=None)
     """
@@ -155,6 +160,10 @@ class LightRAG:
             bool,
             int,
             int,
+            Optional[str],
+            Optional[Dict[str, Any]],
+            Optional[str],
+            Optional[str],
         ],
         List[Dict[str, Any]],
     ] = field(default_factory=lambda: chunking_by_token_size)
@@ -169,10 +178,17 @@ class LightRAG:
         - `split_by_character_only`: If True, the text is split only on the specified character.
         - `chunk_token_size`: The maximum number of tokens per chunk.
         - `chunk_overlap_token_size`: The number of overlapping tokens between consecutive chunks.
+        - `chunking_strategy`: Strategy to use for chunking ('token' or 'paragraph').
+        - `extracted_elements`: Dictionary of extracted elements with placeholders in the text.
+        - `file_path`: Path to the source file (for metadata).
+        - `full_doc_id`: ID of the full document (for metadata).
 
     The function should return a list of dictionaries, where each dictionary contains the following keys:
         - `tokens`: The number of tokens in the chunk.
         - `content`: The text content of the chunk.
+        - `chunk_order_index`: Index of the chunk in the sequence.
+        - `full_doc_id`: ID of the full document (if provided).
+        - `file_path`: Path to the source file (if provided).
 
     Defaults to `chunking_by_token_size` if not specified.
     """
@@ -243,6 +259,21 @@ class LightRAG:
 
     schema_file_path: str = field(default=get_enhanced_config().schema_file_path)
     """Path to the schema.json file."""
+
+    schema_match_threshold: float = field(default=get_enhanced_config().schema_match_threshold)
+    """Confidence threshold for schema entity type matching."""
+
+    new_type_threshold: float = field(default=get_enhanced_config().new_type_threshold)
+    """Confidence threshold for new entity type suggestions."""
+
+    default_entity_type: str = field(default=get_enhanced_config().default_entity_type)
+    """Default entity type to use when classification fails."""
+
+    default_relationship_type: str = field(default=get_enhanced_config().default_relationship_type)
+    """Default relationship type to use when classification fails."""
+
+    enable_schema_classification: bool = field(default=get_enhanced_config().enable_schema_classification)
+    """If True, enables schema-based classification during document processing."""
 
     # Feature Flags
     # ---
@@ -462,6 +493,36 @@ class LightRAG:
             global_config=global_config,
             embedding_func=None,
         )
+
+        # Initialize schema loader and classifier if schema classification is enabled
+        self.schema_loader = None
+        self.schema_classifier = None
+
+        if self.enable_schema_classification and os.path.exists(self.schema_file_path):
+            try:
+                logger.info(f"Initializing schema loader with schema file: {self.schema_file_path}")
+                self.schema_loader = SchemaLoader(self.schema_file_path)
+
+                if self.schema_loader.is_schema_loaded():
+                    logger.info("Schema loaded successfully. Initializing schema classifier.")
+                    # Configure schema classifier with LLM function
+                    self.schema_classifier = SchemaClassifier(
+                        schema_loader=self.schema_loader,
+                        llm_func=self.llm_model_func,
+                        config={
+                            'schema_match_confidence_threshold': self.schema_match_threshold,
+                            'new_type_confidence_threshold': self.new_type_threshold,
+                            'default_entity_type': self.default_entity_type
+                        }
+                    )
+                    logger.info(f"Schema classifier initialized with {len(self.schema_loader.get_entity_types())} entity types")
+                else:
+                    logger.warning(f"Failed to load schema from {self.schema_file_path}. Schema classification will be disabled.")
+                    self.enable_schema_classification = False
+            except Exception as e:
+                logger.error(f"Error initializing schema classifier: {str(e)}")
+                logger.error(traceback.format_exc())
+                self.enable_schema_classification = False
 
         # Directly use llm_response_cache, don't create a new object
         hashing_kv = self.llm_response_cache
@@ -889,7 +950,12 @@ class LightRAG:
                     }
                 )
                 # Cleaning history_messages without breaking it as a shared list object
-                del pipeline_status["history_messages"][:]
+                if "history_messages" in pipeline_status:
+                    del pipeline_status["history_messages"][:]
+                else:
+                    # Initialize history_messages if it doesn't exist
+                    from lightrag.kg.shared_storage import _is_multiprocess, _manager
+                    pipeline_status["history_messages"] = _manager.list() if _is_multiprocess else []
             else:
                 # Another process is busy, just set request flag and return
                 pipeline_status["request_pending"] = True
@@ -916,7 +982,8 @@ class LightRAG:
                 pipeline_status["batchs"] = len(to_process_docs)
                 pipeline_status["cur_batch"] = 0
                 pipeline_status["latest_message"] = log_message
-                pipeline_status["history_messages"].append(log_message)
+                if "history_messages" in pipeline_status:
+                    pipeline_status["history_messages"].append(log_message)
 
                 # Get first document's file path and total count for job name
                 first_doc_id, first_doc = next(iter(to_process_docs.items()))
@@ -963,11 +1030,13 @@ class LightRAG:
 
                                 log_message = f"Extracting stage {current_file_number}/{total_files}: {file_path}"
                                 logger.info(log_message)
-                                pipeline_status["history_messages"].append(log_message)
+                                if "history_messages" in pipeline_status:
+                                    pipeline_status["history_messages"].append(log_message)
                                 log_message = f"Processing d-id: {doc_id}"
                                 logger.info(log_message)
                                 pipeline_status["latest_message"] = log_message
-                                pipeline_status["history_messages"].append(log_message)
+                                if "history_messages" in pipeline_status:
+                                    pipeline_status["history_messages"].append(log_message)
 
                             # Generate chunks from document
                             chunks: dict[str, Any] = {
@@ -983,6 +1052,10 @@ class LightRAG:
                                     split_by_character_only,
                                     self.chunk_overlap_token_size,
                                     self.chunk_token_size,
+                                    self.chunking_strategy,
+                                    None,  # extracted_elements
+                                    file_path,
+                                    doc_id,
                                 )
                             }
 
@@ -1038,7 +1111,8 @@ class LightRAG:
                             logger.error(error_msg)
                             async with pipeline_status_lock:
                                 pipeline_status["latest_message"] = error_msg
-                                pipeline_status["history_messages"].append(error_msg)
+                                if "history_messages" in pipeline_status:
+                                    pipeline_status["history_messages"].append(error_msg)
 
                                 # Cancel other tasks as they are no longer meaningful
                                 for task in [
@@ -1052,7 +1126,7 @@ class LightRAG:
 
                             # Persistent llm cache
                             if self.llm_response_cache:
-                                await self.llm_response_cache.index_done_callback
+                                await self.llm_response_cache.index_done_callback()
 
                             # Update document status to failed
                             await self.doc_status.upsert(
@@ -1116,7 +1190,8 @@ class LightRAG:
                                 log_message = f"Completed processing file {current_file_number}/{total_files}: {file_path}"
                                 logger.info(log_message)
                                 pipeline_status["latest_message"] = log_message
-                                pipeline_status["history_messages"].append(log_message)
+                                if "history_messages" in pipeline_status:
+                                    pipeline_status["history_messages"].append(log_message)
 
                         except Exception as e:
                             # Log error and update pipeline status
@@ -1124,11 +1199,12 @@ class LightRAG:
                             logger.error(error_msg)
                             async with pipeline_status_lock:
                                 pipeline_status["latest_message"] = error_msg
-                                pipeline_status["history_messages"].append(error_msg)
+                                if "history_messages" in pipeline_status:
+                                    pipeline_status["history_messages"].append(error_msg)
 
                             # Persistent llm cache
                             if self.llm_response_cache:
-                                await self.llm_response_cache.index_done_callback
+                                await self.llm_response_cache.index_done_callback()
 
                             # Update document status to failed
                             await self.doc_status.upsert(
@@ -1178,7 +1254,8 @@ class LightRAG:
                 log_message = "Processing additional documents due to pending request"
                 logger.info(log_message)
                 pipeline_status["latest_message"] = log_message
-                pipeline_status["history_messages"].append(log_message)
+                if "history_messages" in pipeline_status:
+                    pipeline_status["history_messages"].append(log_message)
 
                 # Check for pending documents again
                 processing_docs, failed_docs, pending_docs = await asyncio.gather(
@@ -1199,18 +1276,23 @@ class LightRAG:
             async with pipeline_status_lock:
                 pipeline_status["busy"] = False
                 pipeline_status["latest_message"] = log_message
-                pipeline_status["history_messages"].append(log_message)
+                if "history_messages" in pipeline_status:
+                    pipeline_status["history_messages"].append(log_message)
 
     async def _process_entity_relation_graph(
         self, chunk: dict[str, Any], pipeline_status=None, pipeline_status_lock=None
     ) -> list:
         try:
+            # Pass schema_classifier if schema classification is enabled
+            schema_classifier_param = self.schema_classifier if self.enable_schema_classification else None
+
             chunk_results = await extract_entities(
                 chunk,
                 global_config=asdict(self),
                 pipeline_status=pipeline_status,
                 pipeline_status_lock=pipeline_status_lock,
                 llm_response_cache=self.llm_response_cache,
+                schema_classifier=schema_classifier_param,
             )
             return chunk_results
         except Exception as e:
@@ -1218,7 +1300,8 @@ class LightRAG:
             logger.error(error_msg)
             async with pipeline_status_lock:
                 pipeline_status["latest_message"] = error_msg
-                pipeline_status["history_messages"].append(error_msg)
+                if "history_messages" in pipeline_status:
+                    pipeline_status["history_messages"].append(error_msg)
             raise e
 
     async def _insert_done(
@@ -1245,7 +1328,8 @@ class LightRAG:
         if pipeline_status is not None and pipeline_status_lock is not None:
             async with pipeline_status_lock:
                 pipeline_status["latest_message"] = log_message
-                pipeline_status["history_messages"].append(log_message)
+                if "history_messages" in pipeline_status:
+                    pipeline_status["history_messages"].append(log_message)
 
     def insert_custom_kg(
         self, custom_kg: dict[str, Any], full_doc_id: str = None

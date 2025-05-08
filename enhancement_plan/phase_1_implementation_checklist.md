@@ -121,3 +121,62 @@
 - [x] Table extraction correctly converts tables to Markdown
 - [x] Diagram and formula extraction correctly replaces elements with placeholders
 - [x] All components handle error conditions gracefully
+
+## Phase 1 Integration with LightRAG Pipeline
+
+Phase 1 implements enhanced document processing capabilities that are designed to be integrated into LightRAG's existing document ingestion pipeline. The implementation enhances the document processing stage that occurs before chunking and knowledge graph construction.
+
+### Integration Details
+
+1. **Integration Point**: The enhanced document processing functions from Phase 1 are called before the existing chunking phase in LightRAG's pipeline.
+
+2. **Data Flow**: The document processing module takes raw document files (PDFs) as input and outputs structured data (text content, metadata, extracted elements) that is then passed to the chunking phase.
+
+3. **Pipeline Modification**: The implementation modifies the existing pipeline by enhancing the document processing capabilities without replacing the core pipeline structure.
+
+### Data Flow Diagram
+
+```mermaid
+flowchart TD
+    A[Document Input] --> B[Phase 1: Enhanced Document Processing]
+    B --> B1[PDF Text Extraction]
+    B --> B2[Metadata Extraction]
+    B --> B3[Content Filtering]
+    B --> B4[Table Extraction]
+    B --> B5[Diagram/Formula Extraction]
+    
+    B1 & B2 & B3 & B4 & B5 --> C[Processed Document Output]
+    C --> D[LightRAG Pipeline]
+    D --> D1[Document Chunking]
+    D1 --> D2[Embedding Generation]
+    D2 --> D3[Entity Extraction]
+    D3 --> D4[Knowledge Graph Construction]
+    
+    subgraph "Phase 1 Implementation"
+        B
+        B1
+        B2
+        B3
+        B4
+        B5
+        C
+    end
+    
+    subgraph "Existing LightRAG Pipeline"
+        D
+        D1
+        D2
+        D3
+        D4
+    end
+```
+
+### Implementation Notes
+
+- The Phase 1 implementation creates a new `document_processing` module with functions like `process_pdf_document` that handle the enhanced document processing.
+- The output of Phase 1 processing includes:
+  - Extracted text content
+  - Document metadata
+  - Extracted elements (tables, diagrams, formulas) with placeholders in the text
+- This structured output is then passed to the existing chunking phase, which has been modified in Phase 2 to handle the additional metadata and extracted elements.
+- The implementation preserves the existing pipeline structure while enhancing its capabilities, following the principle of "Integration, Not Replacement" mentioned in the overall enhancement context.

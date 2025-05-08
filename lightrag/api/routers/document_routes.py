@@ -1023,7 +1023,14 @@ def create_document_routes(
                 }
             )
             # Cleaning history_messages without breaking it as a shared list object
-            del pipeline_status["history_messages"][:]
+            if "history_messages" in pipeline_status:
+                del pipeline_status["history_messages"][:]
+            else:
+                # Initialize history_messages if it doesn't exist
+                from lightrag.kg.shared_storage import _is_multiprocess, _manager
+                pipeline_status["history_messages"] = _manager.list() if _is_multiprocess else []
+
+            # Add initial message
             pipeline_status["history_messages"].append(
                 "Starting document clearing process"
             )

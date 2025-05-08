@@ -364,6 +364,11 @@ async def initialize_pipeline_status():
     async with get_internal_lock():
         # Check if already initialized by checking for required fields
         if "busy" in pipeline_namespace:
+            # Ensure history_messages exists even if other fields are initialized
+            if "history_messages" not in pipeline_namespace:
+                history_messages = _manager.list() if _is_multiprocess else []
+                pipeline_namespace["history_messages"] = history_messages
+                direct_log(f"Process {os.getpid()} Added missing history_messages to pipeline namespace")
             return
 
         # Create a shared list object for history_messages
@@ -379,7 +384,7 @@ async def initialize_pipeline_status():
                 "cur_batch": 0,  # Current processing batch
                 "request_pending": False,  # Flag for pending request for processing
                 "latest_message": "",  # Latest message from pipeline processing
-                "history_messages": history_messages,  # 使用共享列表对象
+                "history_messages": history_messages,  # Shared list object for history messages
             }
         )
         direct_log(f"Process {os.getpid()} Pipeline namespace initialized")

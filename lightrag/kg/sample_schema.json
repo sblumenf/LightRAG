@@ -1,0 +1,268 @@
+{
+  "entities": [
+    {
+      "name": "Person",
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "The person's full name"
+        },
+        {
+          "name": "age",
+          "type": "integer",
+          "description": "The person's age"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "description": "The person's email address"
+        },
+        {
+          "name": "occupation",
+          "type": "string",
+          "description": "The person's occupation or job title"
+        }
+      ]
+    },
+    {
+      "name": "Organization",
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "The organization's name"
+        },
+        {
+          "name": "industry",
+          "type": "string",
+          "description": "The industry the organization operates in"
+        },
+        {
+          "name": "founded",
+          "type": "integer",
+          "description": "The year the organization was founded"
+        },
+        {
+          "name": "size",
+          "type": "string",
+          "description": "The size of the organization (small, medium, large)"
+        }
+      ]
+    },
+    {
+      "name": "Document",
+      "properties": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "The document's title"
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "description": "The document's content"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "description": "The date the document was created or published"
+        },
+        {
+          "name": "author",
+          "type": "string",
+          "description": "The author of the document"
+        }
+      ]
+    },
+    {
+      "name": "Event",
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "The event's name"
+        },
+        {
+          "name": "date",
+          "type": "string",
+          "description": "The date of the event"
+        },
+        {
+          "name": "location",
+          "type": "string",
+          "description": "The location of the event"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "description": "A description of the event"
+        }
+      ]
+    },
+    {
+      "name": "Location",
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "The location's name"
+        },
+        {
+          "name": "address",
+          "type": "string",
+          "description": "The location's address"
+        },
+        {
+          "name": "city",
+          "type": "string",
+          "description": "The city where the location is"
+        },
+        {
+          "name": "country",
+          "type": "string",
+          "description": "The country where the location is"
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "properties": [
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "The product's name"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "description": "A description of the product"
+        },
+        {
+          "name": "price",
+          "type": "float",
+          "description": "The product's price"
+        },
+        {
+          "name": "category",
+          "type": "string",
+          "description": "The product's category"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "WORKS_FOR",
+      "source": "Person",
+      "target": "Organization",
+      "properties": [
+        {
+          "name": "role",
+          "type": "string",
+          "description": "The person's role in the organization"
+        },
+        {
+          "name": "since",
+          "type": "integer",
+          "description": "The year the person started working for the organization"
+        }
+      ]
+    },
+    {
+      "name": "AUTHORED",
+      "source": "Person",
+      "target": "Document",
+      "properties": [
+        {
+          "name": "date",
+          "type": "string",
+          "description": "The date the document was authored"
+        }
+      ]
+    },
+    {
+      "name": "MENTIONS",
+      "source": "Document",
+      "target": "Person",
+      "properties": [
+        {
+          "name": "sentiment",
+          "type": "float",
+          "description": "The sentiment of the mention (negative to positive)"
+        },
+        {
+          "name": "count",
+          "type": "integer",
+          "description": "The number of times the person is mentioned"
+        }
+      ]
+    },
+    {
+      "name": "ORGANIZED_BY",
+      "source": "Event",
+      "target": "Organization",
+      "properties": [
+        {
+          "name": "role",
+          "type": "string",
+          "description": "The organization's role in the event"
+        }
+      ]
+    },
+    {
+      "name": "ATTENDED",
+      "source": "Person",
+      "target": "Event",
+      "properties": [
+        {
+          "name": "role",
+          "type": "string",
+          "description": "The person's role in the event"
+        }
+      ]
+    },
+    {
+      "name": "LOCATED_IN",
+      "source": "Event",
+      "target": "Location",
+      "properties": []
+    },
+    {
+      "name": "HEADQUARTERED_IN",
+      "source": "Organization",
+      "target": "Location",
+      "properties": [
+        {
+          "name": "since",
+          "type": "integer",
+          "description": "The year the organization moved to this location"
+        }
+      ]
+    },
+    {
+      "name": "PRODUCES",
+      "source": "Organization",
+      "target": "Product",
+      "properties": []
+    },
+    {
+      "name": "MENTIONED_IN",
+      "source": "Product",
+      "target": "Document",
+      "properties": [
+        {
+          "name": "sentiment",
+          "type": "float",
+          "description": "The sentiment of the mention (negative to positive)"
+        }
+      ]
+    }
+  ]
+}

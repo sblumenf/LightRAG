@@ -1,7 +1,8 @@
 from __future__ import annotations
 import weakref
 
-# Import numpy first to avoid reloading warning
+# Note: If you see NumPy reloading warnings, add 'warnings.filterwarnings("ignore", message=".*NumPy module was reloaded.*")'
+# to your test configuration or ensure NumPy is imported before any other modules that might import it
 import numpy as np
 import asyncio
 import html

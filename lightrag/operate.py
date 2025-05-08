@@ -38,66 +38,12 @@ from .base import (
 from .prompt import GRAPH_FIELD_SEP, PROMPTS
 import time
 from dotenv import load_dotenv
+from .text_chunker import chunking_by_token_size
 
 # use the .env that is inside the current folder
 # allows to use different .env file for each lightrag instance
 # the OS environment variables take precedence over the .env file
 load_dotenv(dotenv_path=".env", override=False)
-
-
-def chunking_by_token_size(
-    tokenizer: Tokenizer,
-    content: str,
-    split_by_character: str | None = None,
-    split_by_character_only: bool = False,
-    overlap_token_size: int = 128,
-    max_token_size: int = 1024,
-) -> list[dict[str, Any]]:
-    tokens = tokenizer.encode(content)
-    results: list[dict[str, Any]] = []
-    if split_by_character:
-        raw_chunks = content.split(split_by_character)
-        new_chunks = []
-        if split_by_character_only:
-            for chunk in raw_chunks:
-                _tokens = tokenizer.encode(chunk)
-                new_chunks.append((len(_tokens), chunk))
-        else:
-            for chunk in raw_chunks:
-                _tokens = tokenizer.encode(chunk)
-                if len(_tokens) > max_token_size:
-                    for start in range(
-                        0, len(_tokens), max_token_size - overlap_token_size
-                    ):
-                        chunk_content = tokenizer.decode(
-                            _tokens[start : start + max_token_size]
-                        )
-                        new_chunks.append(
-                            (min(max_token_size, len(_tokens) - start), chunk_content)
-                        )
-                else:
-                    new_chunks.append((len(_tokens), chunk))
-        for index, (_len, chunk) in enumerate(new_chunks):
-            results.append(
-                {
-                    "tokens": _len,
-                    "content": chunk.strip(),
-                    "chunk_order_index": index,
-                }
-            )
-    else:
-        for index, start in enumerate(
-            range(0, len(tokens), max_token_size - overlap_token_size)
-        ):
-            chunk_content = tokenizer.decode(tokens[start : start + max_token_size])
-            results.append(
-                {
-                    "tokens": min(max_token_size, len(tokens) - start),
-                    "content": chunk_content.strip(),
-                    "chunk_order_index": index,
-                }
-            )
-    return results
 
 
 async def _handle_entity_relation_summary(
@@ -495,6 +441,7 @@ async def merge_nodes_and_edges(
     current_file_number: int = 0,
     total_files: int = 0,
     file_path: str = "unknown_source",
+    schema_validator=None,
 ) -> None:
     """Merge nodes and edges from extraction results
 
@@ -507,6 +454,10 @@ async def merge_nodes_and_edges(
         pipeline_status: Pipeline status dictionary
         pipeline_status_lock: Lock for pipeline status
         llm_response_cache: LLM response cache
+        current_file_number: Current file number for logging
+        total_files: Total number of files for logging
+        file_path: File path for logging
+        schema_validator: Optional schema validator for validating entities and relationships
     """
     # Get lock manager from shared storage
     from .kg.shared_storage import get_graph_db_lock
@@ -543,6 +494,33 @@ async def merge_nodes_and_edges(
 
         # Process and update all entities at once
         for entity_name, entities in all_nodes.items():
+            # Validate entities against schema if schema validator is provided
+            if schema_validator is not None and global_config.get("validate_entities", False):
+                validated_entities = []
+                for entity in entities:
+                    entity_type = entity.get("entity_type", "UNKNOWN")
+                    # Extract properties from entity data
+                    properties = {
+                        "description": entity.get("description", ""),
+                        "name": entity.get("entity_name", "")
+                    }
+
+                    # Add properties from the properties field if it exists
+                    if "properties" in entity and isinstance(entity["properties"], dict):
+                        properties.update(entity["properties"])
+
+                    # Validate entity against schema
+                    is_valid, error_msg = schema_validator.validate_entity(entity_type, properties)
+                    if not is_valid:
+                        logger.warning(f"Invalid entity during merge: {error_msg}")
+                        # Use default entity type if validation fails
+                        entity["entity_type"] = global_config.get("default_entity_type", "UNKNOWN")
+
+                    validated_entities.append(entity)
+
+                # Replace entities with validated entities
+                entities = validated_entities
+
             entity_data = await _merge_nodes_then_upsert(
                 entity_name,
                 entities,
@@ -556,6 +534,50 @@ async def merge_nodes_and_edges(
 
         # Process and update all relationships at once
         for edge_key, edges in all_edges.items():
+            # Validate relationships against schema if schema validator is provided
+            if schema_validator is not None and global_config.get("validate_relationships", False):
+                validated_edges = []
+                for edge in edges:
+                    # Get entity types for source and target
+                    src_id = edge.get("src_id", "")
+                    tgt_id = edge.get("tgt_id", "")
+
+                    # Get entity data from all_nodes
+                    src_entity = next((e for entities in all_nodes.values() for e in entities
+                                      if e.get("entity_name") == src_id), None)
+                    tgt_entity = next((e for entities in all_nodes.values() for e in entities
+                                      if e.get("entity_name") == tgt_id), None)
+
+                    if src_entity and tgt_entity:
+                        src_type = src_entity.get("entity_type", "UNKNOWN")
+                        tgt_type = tgt_entity.get("entity_type", "UNKNOWN")
+                        rel_type = edge.get("keywords", "RELATED_TO")
+
+                        # Extract properties from relationship data
+                        properties = {
+                            "description": edge.get("description", ""),
+                            "weight": edge.get("weight", 1.0)
+                        }
+
+                        # Add properties from the properties field if it exists
+                        if "properties" in edge and isinstance(edge["properties"], dict):
+                            properties.update(edge["properties"])
+
+                        # Validate relationship against schema
+                        is_valid, error_msg = schema_validator.validate_relationship(
+                            rel_type, src_type, tgt_type, properties
+                        )
+
+                        if not is_valid:
+                            logger.warning(f"Invalid relationship during merge: {error_msg}")
+                            # Use default relationship type if validation fails
+                            edge["keywords"] = global_config.get("default_relationship_type", "RELATED_TO")
+
+                    validated_edges.append(edge)
+
+                # Replace edges with validated edges
+                edges = validated_edges
+
             edge_data = await _merge_edges_then_upsert(
                 edge_key[0],
                 edge_key[1],
@@ -589,6 +611,8 @@ async def merge_nodes_and_edges(
                     "content": f"{dp['entity_name']}\n{dp['description']}",
                     "source_id": dp["source_id"],
                     "file_path": dp.get("file_path", "unknown_source"),
+                    # Include properties if available
+                    "properties": dp.get("properties", {})
                 }
                 for dp in entities_data
             }
@@ -610,6 +634,8 @@ async def merge_nodes_and_edges(
                     "content": f"{dp['src_id']}\t{dp['tgt_id']}\n{dp['keywords']}\n{dp['description']}",
                     "source_id": dp["source_id"],
                     "file_path": dp.get("file_path", "unknown_source"),
+                    # Include properties if available
+                    "properties": dp.get("properties", {})
                 }
                 for dp in relationships_data
             }
@@ -622,6 +648,9 @@ async def extract_entities(
     pipeline_status: dict = None,
     pipeline_status_lock=None,
     llm_response_cache: BaseKVStorage | None = None,
+    schema_classifier=None,
+    schema_validator=None,
+    relationship_extractor=None,
 ) -> list:
     use_llm_func: callable = global_config["llm_model_func"]
     entity_extract_max_gleaning = global_config["entity_extract_max_gleaning"]
@@ -634,6 +663,17 @@ async def extract_entities(
     entity_types = global_config["addon_params"].get(
         "entity_types", PROMPTS["DEFAULT_ENTITY_TYPES"]
     )
+
+    # If schema validator is provided, use entity types from schema
+    if schema_validator is not None and global_config.get("use_schema_entity_types", False):
+        try:
+            schema_entity_types = schema_validator.get_entity_types()
+            if schema_entity_types:
+                entity_types = schema_entity_types
+                logger.info(f"Using entity types from schema: {entity_types}")
+        except Exception as e:
+            logger.warning(f"Error getting entity types from schema: {str(e)}")
+
     example_number = global_config["addon_params"].get("example_number", None)
     if example_number and example_number < len(PROMPTS["entity_extraction_examples"]):
         examples = "\n".join(
@@ -700,6 +740,22 @@ async def extract_entities(
                 record_attributes, chunk_key, file_path
             )
             if if_entities is not None:
+                # Validate entity against schema if schema validator is provided
+                if schema_validator is not None and global_config.get("validate_entities", False):
+                    entity_type = if_entities["entity_type"]
+                    # Extract properties from entity data
+                    properties = {
+                        "description": if_entities["description"],
+                        "name": if_entities["entity_name"]
+                    }
+
+                    # Validate entity against schema
+                    is_valid, error_msg = schema_validator.validate_entity(entity_type, properties)
+                    if not is_valid:
+                        logger.warning(f"Invalid entity: {error_msg}")
+                        # Use default entity type if validation fails
+                        if_entities["entity_type"] = global_config.get("default_entity_type", "UNKNOWN")
+
                 maybe_nodes[if_entities["entity_name"]].append(if_entities)
                 continue
 
@@ -707,6 +763,35 @@ async def extract_entities(
                 record_attributes, chunk_key, file_path
             )
             if if_relation is not None:
+                # Validate relationship against schema if schema validator is provided
+                if schema_validator is not None and global_config.get("validate_relationships", False):
+                    # Get entity types for source and target
+                    src_entity = next((e for entities in maybe_nodes.values() for e in entities
+                                      if e["entity_name"] == if_relation["src_id"]), None)
+                    tgt_entity = next((e for entities in maybe_nodes.values() for e in entities
+                                      if e["entity_name"] == if_relation["tgt_id"]), None)
+
+                    if src_entity and tgt_entity:
+                        src_type = src_entity["entity_type"]
+                        tgt_type = tgt_entity["entity_type"]
+                        rel_type = if_relation["keywords"]
+
+                        # Extract properties from relationship data
+                        properties = {
+                            "description": if_relation["description"],
+                            "weight": if_relation["weight"]
+                        }
+
+                        # Validate relationship against schema
+                        is_valid, error_msg = schema_validator.validate_relationship(
+                            rel_type, src_type, tgt_type, properties
+                        )
+
+                        if not is_valid:
+                            logger.warning(f"Invalid relationship: {error_msg}")
+                            # Use default relationship type if validation fails
+                            if_relation["keywords"] = global_config.get("default_relationship_type", "RELATED_TO")
+
                 maybe_edges[(if_relation["src_id"], if_relation["tgt_id"])].append(
                     if_relation
                 )
@@ -728,6 +813,91 @@ async def extract_entities(
         # Get file path from chunk data or use default
         file_path = chunk_dp.get("file_path", "unknown_source")
 
+        # Apply schema classification if enabled
+        schema_classification = None
+        maybe_nodes = defaultdict(list)
+        maybe_edges = defaultdict(list)
+
+        if schema_classifier is not None and global_config.get("enable_schema_classification", False):
+            try:
+                # Create a TextChunk object for classification
+                from lightrag.text_chunker import TextChunk
+                text_chunk = TextChunk(
+                    text=content,
+                    metadata={
+                        "source_id": chunk_key,
+                        "file_path": file_path,
+                        "full_doc_id": chunk_dp.get("full_doc_id", "")
+                    }
+                )
+
+                # Classify the chunk
+                schema_classification = await schema_classifier.classify_chunk(text_chunk)
+
+                # Log classification result
+                logger.info(f"Schema classification for chunk {chunk_key}: {schema_classification.get('entity_type')} (confidence: {schema_classification.get('confidence', 0.0):.2f})")
+
+                # If we have a valid classification with properties, add it as an entity
+                if schema_classification.get("entity_type") != global_config.get("default_entity_type", "UNKNOWN"):
+                    # Create an entity from the classification
+                    entity_name = f"{schema_classification.get('entity_type')}_{chunk_key}"
+                    entity_type = schema_classification.get("entity_type")
+
+                    # Create a description from the properties
+                    properties = schema_classification.get("properties", {})
+                    description = "; ".join([f"{k}: {v}" for k, v in properties.items()])
+
+                    # If no properties or empty description, use a default description
+                    if not description:
+                        description = f"A {entity_type} extracted from the document."
+
+                    # Add the entity to the results
+                    maybe_nodes[entity_name].append({
+                        "entity_name": entity_name,
+                        "entity_type": entity_type,
+                        "description": description,
+                        "source_id": chunk_key,
+                        "file_path": file_path,
+                        "properties": properties,
+                        "confidence": schema_classification.get("confidence", 0.0)
+                    })
+
+                    # If we have a high-confidence classification, skip LLM extraction
+                    if schema_classification.get("confidence", 0.0) > global_config.get("schema_match_threshold", 0.75):
+                        # If relationship extractor is provided, extract relationships
+                        if relationship_extractor is not None and global_config.get("extract_relationships", False):
+                            try:
+                                # Flatten the entities list
+                                entities_list = [entity for entities in maybe_nodes.values() for entity in entities]
+
+                                # Extract relationships
+                                relationships = await relationship_extractor.extract_relationships(
+                                    entities_list, chunk_key, file_path
+                                )
+
+                                # Add relationships to edges
+                                for rel in relationships:
+                                    maybe_edges[(rel["src_id"], rel["tgt_id"])].append(rel)
+
+                                logger.info(f"Extracted {len(relationships)} relationships for chunk {chunk_key}")
+                            except Exception as e:
+                                logger.error(f"Error extracting relationships for chunk {chunk_key}: {str(e)}")
+
+                        processed_chunks += 1
+                        entities_count = len(maybe_nodes)
+                        relations_count = len(maybe_edges)
+                        log_message = f"Chunk {processed_chunks} of {total_chunks} extracted {entities_count} Ent + {relations_count} Rel (schema-based)"
+                        logger.info(log_message)
+                        if pipeline_status is not None:
+                            async with pipeline_status_lock:
+                                pipeline_status["latest_message"] = log_message
+                                pipeline_status["history_messages"].append(log_message)
+
+                        return maybe_nodes, maybe_edges
+            except Exception as e:
+                logger.error(f"Error during schema classification for chunk {chunk_key}: {str(e)}")
+                # Continue with normal entity extraction
+
         # Get initial extraction
         hint_prompt = entity_extract_prompt.format(
             **{**context_base, "input_text": content}
@@ -742,9 +912,18 @@ async def extract_entities(
         history = pack_user_ass_to_openai_messages(hint_prompt, final_result)
 
         # Process initial extraction with file path
-        maybe_nodes, maybe_edges = await _process_extraction_result(
+        llm_nodes, llm_edges = await _process_extraction_result(
             final_result, chunk_key, file_path
         )
+
+        # Merge schema-based and LLM-based entities and relationships
+        for entity_name, entities in llm_nodes.items():
+            if entity_name not in maybe_nodes:
+                maybe_nodes[entity_name].extend(entities)
+
+        for edge_key, edges in llm_edges.items():
+            if edge_key not in maybe_edges:
+                maybe_edges[edge_key].extend(edges)
 
         # Process additional gleaning results
         for now_glean_index in range(entity_extract_max_gleaning):
@@ -767,12 +946,12 @@ async def extract_entities(
             for entity_name, entities in glean_nodes.items():
                 if (
                     entity_name not in maybe_nodes
-                ):  # Only accetp entities with new name in gleaning stage
+                ):  # Only accept entities with new name in gleaning stage
                     maybe_nodes[entity_name].extend(entities)
             for edge_key, edges in glean_edges.items():
                 if (
                     edge_key not in maybe_edges
-                ):  # Only accetp edges with new name in gleaning stage
+                ):  # Only accept edges with new name in gleaning stage
                     maybe_edges[edge_key].extend(edges)
 
             if now_glean_index == entity_extract_max_gleaning - 1:
@@ -788,6 +967,29 @@ async def extract_entities(
             if_loop_result = if_loop_result.strip().strip('"').strip("'").lower()
             if if_loop_result != "yes":
                 break
+
+        # If relationship extractor is provided and we have entities but no relationships,
+        # extract relationships using the relationship extractor
+        if (relationship_extractor is not None and
+            global_config.get("extract_relationships", False) and
+            len(maybe_nodes) > 1 and
+            len(maybe_edges) == 0):
+            try:
+                # Flatten the entities list
+                entities_list = [entity for entities in maybe_nodes.values() for entity in entities]
+
+                # Extract relationships
+                relationships = await relationship_extractor.extract_relationships(
+                    entities_list, chunk_key, file_path
+                )
+
+                # Add relationships to edges
+                for rel in relationships:
+                    maybe_edges[(rel["src_id"], rel["tgt_id"])].append(rel)
+
+                logger.info(f"Extracted {len(relationships)} relationships for chunk {chunk_key} using relationship extractor")
+            except Exception as e:
+                logger.error(f"Error extracting relationships for chunk {chunk_key}: {str(e)}")
 
         processed_chunks += 1
         entities_count = len(maybe_nodes)

@@ -169,8 +169,132 @@ Instead of the above areas, testing efforts should focus on:
 
 By focusing on these areas, we can build a more robust test suite that provides confidence in the system's behavior without being brittle or environment-dependent.
 
+## 7. Schema-Based Classification Enhancements
+
+The schema-based classification functionality implemented in Task 2.3 provides a solid foundation for structured knowledge extraction. The following enhancements would further improve this functionality:
+
+### 7.1 Documentation and Examples
+
+- **Objective**: Provide comprehensive documentation and examples for schema-based classification
+- **Implementation**:
+  - Create detailed documentation for schema file format and structure
+  - Develop example schema files for common domains (academic papers, financial documents, technical manuals, etc.)
+  - Add tutorials for creating custom schemas
+  - Document best practices for schema design and property extraction
+- **Benefits**: Easier adoption, better understanding of capabilities, improved user experience
+
+### 7.2 UI Integration
+
+- **Objective**: Add schema classification information to the UI for visualization
+- **Implementation**:
+  - Develop a schema visualization component for the LightRAG UI
+  - Add entity type filtering and highlighting based on schema classification
+  - Implement property exploration for classified entities
+  - Create a schema editor for creating and modifying schemas
+- **Benefits**: Enhanced user experience, better understanding of document structure, improved navigation
+
+### 7.3 Performance Optimization
+
+- **Objective**: Optimize the schema classification process for large documents
+- **Implementation**:
+  - Implement batch processing for large document collections
+  - Add caching for classification results
+  - Develop heuristics for pre-filtering chunks before classification
+  - Optimize LLM prompts for faster classification
+- **Benefits**: Improved processing speed, reduced costs, better scalability
+
+### 7.4 Advanced Schema Features
+
+- **Objective**: Add support for more advanced schema features
+- **Implementation**:
+  - Add support for inheritance and polymorphism in entity types
+  - Implement validation rules for properties
+  - Add support for complex relationship types (many-to-many, hierarchical, etc.)
+  - Develop schema versioning and migration tools
+- **Benefits**: More expressive schemas, better data quality, improved knowledge representation
+
+### 7.5 Integration with Knowledge Graph
+
+- **Objective**: Enhance knowledge graph construction using schema classification
+- **Implementation**:
+  - Use schema-classified entities as primary nodes in the knowledge graph
+  - Extract relationships based on schema-defined relationship types
+  - Implement entity resolution based on schema properties
+  - Add support for schema-guided reasoning and inference
+- **Benefits**: Richer knowledge representation, improved query accuracy, better context for RAG
+
+## 8. Production Readiness Enhancements
+
+Based on the current state of the codebase, the following enhancements would improve production readiness:
+
+### 8.1 Dependency Management
+
+- **Objective**: Ensure all dependencies are properly documented and managed
+- **Implementation**:
+  - Create a comprehensive requirements.txt with clear version specifications
+  - Separate core dependencies from optional enhancements (e.g., psutil, spaCy)
+  - Document installation procedures for different environments (development, testing, production)
+  - Implement dependency checks at runtime with graceful fallbacks
+  - Add containerization support (Docker) with appropriate dependency management
+- **Benefits**: Improved deployment reliability, clearer onboarding, reduced "works on my machine" issues
+
+### 8.2 Warning Resolution
+
+- **Objective**: Address warnings in the codebase to improve reliability
+- **Implementation**:
+  - Resolve embedding dimension mismatch warnings by implementing automatic dimension detection
+  - Add proper handling for missing spaCy when preserve_entities is enabled
+  - Fix asyncio event loop handling to prevent "Event loop is closed" warnings
+  - Implement proper cleanup for async resources
+  - Add configuration options to suppress non-critical warnings in production
+- **Benefits**: More stable runtime behavior, cleaner logs, fewer unexpected behaviors
+
+### 8.3 Error Handling and Logging
+
+- **Objective**: Enhance error handling and logging for production environments
+- **Implementation**:
+  - Implement structured logging with appropriate log levels
+  - Add context information to error messages
+  - Create a centralized error handling strategy
+  - Implement retry mechanisms for transient failures
+  - Add telemetry for production monitoring
+- **Benefits**: Easier troubleshooting, better visibility into system behavior, improved reliability
+
+### 8.4 Performance Testing and Optimization
+
+- **Objective**: Ensure the system performs well under production loads
+- **Implementation**:
+  - Complete the memory usage tests (currently skipped)
+  - Implement load testing for concurrent users
+  - Add benchmarks for different document sizes and types
+  - Optimize critical paths identified in performance testing
+  - Implement caching strategies for expensive operations
+- **Benefits**: Better scalability, predictable resource usage, improved user experience
+
+### 8.5 Production Deployment Guide
+
+- **Objective**: Create comprehensive documentation for production deployment
+- **Implementation**:
+  - Develop deployment guides for different environments (cloud, on-premises)
+  - Document configuration options and their implications
+  - Create troubleshooting guides for common issues
+  - Add monitoring and alerting recommendations
+  - Provide scaling guidelines based on expected usage patterns
+- **Benefits**: Faster deployment, reduced operational issues, better support capabilities
+
+### 8.6 Security Enhancements
+
+- **Objective**: Ensure the system is secure for production use
+- **Implementation**:
+  - Conduct a security audit of the codebase
+  - Implement proper authentication and authorization
+  - Add input validation for all external inputs
+  - Ensure secure handling of API keys and credentials
+  - Document security best practices for deployment
+- **Benefits**: Reduced security risks, compliance with security standards, protection of sensitive data
+
 ## Conclusion
 
-These enhancements would significantly extend the capabilities of the diagram and formula extraction functionality implemented in Task 1.5. By focusing on LLM integration, performance optimization, UI/UX improvements, and format expansion, LightRAG can provide a more comprehensive and user-friendly experience for working with technical and visual content.
+These enhancements would significantly extend the capabilities of both the diagram and formula extraction functionality implemented in Task 1.5 and the schema-based classification functionality implemented in Task 2.3. By focusing on LLM integration, performance optimization, UI/UX improvements, format expansion, schema enhancements, and production readiness, LightRAG can provide a more comprehensive, user-friendly, and reliable experience for working with technical, visual, and structured content.
 
-The modular design of the current implementation provides a solid foundation for these enhancements, allowing for incremental improvements without requiring a complete redesign of the existing functionality.
+The modular design of the current implementation provides a solid foundation for these enhancements, allowing for incremental improvements without requiring a complete redesign of the existing functionality. With the additional focus on production readiness, LightRAG will be well-positioned for deployment in enterprise environments with demanding reliability and performance requirements.

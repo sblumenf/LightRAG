@@ -348,6 +348,97 @@ Similarity score criteria:
 Return only a number between 0-1, without any additional content.
 """
 
+PROMPTS["relationship_extraction"] = """---Role---
+
+You are a helpful assistant tasked with extracting relationships between entities.
+
+---Goal---
+
+Given a list of entities, identify all relationships between the entities.
+
+---Instructions---
+
+1. Analyze the provided entities and their types.
+2. For each pair of entities, determine if there is a relationship between them.
+3. For each relationship, extract the following information:
+   - source: The source entity name
+   - target: The target entity name
+   - type: The relationship type (e.g., MENTIONS, AUTHORED_BY, RELATED_TO)
+   - description: A description of the relationship
+   - weight: A numeric score indicating strength of the relationship (0.0 to 1.0)
+
+4. Return the relationships in JSON format with the following structure:
+{{"relationships": [
+  {{
+    "source": "entity1_name",
+    "target": "entity2_name",
+    "type": "RELATIONSHIP_TYPE",
+    "description": "Description of the relationship",
+    "weight": 0.8
+  }}
+]}}
+
+---Entities---
+{entities}
+
+---Output Rules---
+- Include all relationships that you can identify
+- Use {language} as the output language
+- Return only the JSON object with the relationships, no additional text
+
+Output:
+"""
+
+PROMPTS["schema_relationship_extraction"] = """---Role---
+
+You are a helpful assistant tasked with extracting relationships between entities based on a schema.
+
+---Goal---
+
+Given a list of entities and a schema, identify all valid relationships between the entities according to the schema.
+
+---Instructions---
+
+1. Analyze the provided entities and their types.
+2. Review the schema to understand valid relationship types between different entity types.
+3. For each pair of entities, determine if there is a valid relationship type according to the schema.
+4. For each valid relationship, extract the following information:
+   - source: The source entity name
+   - target: The target entity name
+   - type: The relationship type from the schema
+   - description: A description of the relationship
+   - properties: Any relevant properties for the relationship as defined in the schema
+
+5. Return the relationships in JSON format with the following structure:
+{{"relationships": [
+  {{
+    "source": "entity1_name",
+    "target": "entity2_name",
+    "type": "RELATIONSHIP_TYPE",
+    "description": "Description of the relationship",
+    "properties": {{
+      "property1": "value1",
+      "property2": "value2"
+    }}
+  }}
+]}}
+
+---Entities---
+{entities}
+
+---Schema---
+{schema}
+
+---Output Rules---
+- Only include relationships that are valid according to the schema
+- Ensure the source and target entity types match the schema requirements for each relationship type
+- Include all required properties for each relationship type
+- Use {language} as the output language
+- Return only the JSON object with the relationships, no additional text
+
+Output:
+"""
+
 PROMPTS["mix_rag_response"] = """---Role---
 
 You are a helpful assistant responding to user query about Data Sources provided below.

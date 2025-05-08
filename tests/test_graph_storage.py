@@ -16,6 +16,8 @@ import os
 import sys
 import importlib
 import numpy as np
+import pytest
+import pytest_asyncio
 from dotenv import load_dotenv
 from ascii_colors import ASCIIColors
 
@@ -122,6 +124,43 @@ async def initialize_graph_storage():
     except Exception as e:
         ASCIIColors.red(f"错误: 初始化 {graph_storage_type} 失败: {str(e)}")
         return None
+
+
+# Add pytest fixture for storage
+@pytest_asyncio.fixture
+async def storage():
+    """Fixture to provide a graph storage instance for tests."""
+    # Initialize shared data for NetworkXStorage
+    initialize_share_data()
+
+    # Import NetworkXStorage directly for testing
+    from lightrag.kg.networkx_impl import NetworkXStorage
+
+    # Create global config
+    global_config = {
+        "embedding_batch_num": 10,
+        "vector_db_storage_cls_kwargs": {
+            "cosine_better_than_threshold": 0.5
+        },
+        "working_dir": "./rag_storage",
+    }
+
+    # Create storage instance
+    storage_instance = NetworkXStorage(
+        namespace="test_graph",
+        global_config=global_config,
+        embedding_func=mock_embedding_func,
+    )
+
+    # Initialize storage
+    await storage_instance.initialize()
+
+    # Yield storage for test
+    yield storage_instance
+
+    # Clean up after test
+    await storage_instance.drop()
+    await storage_instance.finalize()
 
 
 async def test_graph_basic(storage):

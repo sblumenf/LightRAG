@@ -32,6 +32,7 @@ from lightrag import LightRAG, __version__ as core_version
 from lightrag.api import __api_version__
 from lightrag.types import GPTKeywordExtractionFormat
 from lightrag.utils import EmbeddingFunc
+from lightrag.llm.enhanced_embedding import create_openai_enhanced_embedding, create_google_enhanced_embedding
 from lightrag.api.routers.document_routes import (
     DocumentManager,
     create_document_routes,
@@ -254,36 +255,95 @@ def create_app(args):
             **kwargs,
         )
 
-    embedding_func = EmbeddingFunc(
-        embedding_dim=args.embedding_dim,
-        max_token_size=args.max_embed_tokens,
-        func=lambda texts: lollms_embed(
-            texts,
-            embed_model=args.embedding_model,
-            host=args.embedding_binding_host,
-            api_key=args.embedding_binding_api_key,
+    # Create the embedding function based on the configuration
+    if args.enhanced_embedding_enabled:
+        logger.info(f"Using enhanced embedding with provider: {args.enhanced_embedding_provider}")
+
+        if args.enhanced_embedding_provider == "openai":
+            embedding_func = create_openai_enhanced_embedding(
+                model_name=args.enhanced_embedding_openai_model,
+                embedding_dim=args.embedding_dim,
+                max_token_size=args.max_embed_tokens,
+                batch_size=args.enhanced_embedding_batch_size,
+                max_retries=args.enhanced_embedding_max_retries,
+                retry_delay=args.enhanced_embedding_retry_delay,
+                api_key=args.embedding_binding_api_key if args.embedding_binding == "openai" else None,
+            )
+        elif args.enhanced_embedding_provider == "google":
+            embedding_func = create_google_enhanced_embedding(
+                model_name=args.enhanced_embedding_google_model,
+                embedding_dim=args.embedding_dim,
+                max_token_size=args.max_embed_tokens,
+                batch_size=args.enhanced_embedding_batch_size,
+                max_retries=args.enhanced_embedding_max_retries,
+                retry_delay=args.enhanced_embedding_retry_delay,
+                api_key=args.embedding_binding_api_key if args.embedding_binding == "openai" else None,
+            )
+        else:
+            logger.warning(f"Unknown enhanced embedding provider: {args.enhanced_embedding_provider}. Falling back to standard embedding.")
+            # Fall back to standard embedding
+            embedding_func = EmbeddingFunc(
+                embedding_dim=args.embedding_dim,
+                max_token_size=args.max_embed_tokens,
+                func=lambda texts: lollms_embed(
+                    texts,
+                    embed_model=args.embedding_model,
+                    host=args.embedding_binding_host,
+                    api_key=args.embedding_binding_api_key,
+                )
+                if args.embedding_binding == "lollms"
+                else ollama_embed(
+                    texts,
+                    embed_model=args.embedding_model,
+                    host=args.embedding_binding_host,
+                    api_key=args.embedding_binding_api_key,
+                )
+                if args.embedding_binding == "ollama"
+                else azure_openai_embed(
+                    texts,
+                    model=args.embedding_model,  # no host is used for openai,
+                    api_key=args.embedding_binding_api_key,
+                )
+                if args.embedding_binding == "azure_openai"
+                else openai_embed(
+                    texts,
+                    model=args.embedding_model,
+                    base_url=args.embedding_binding_host,
+                    api_key=args.embedding_binding_api_key,
+                ),
+            )
+    else:
+        # Use standard embedding
+        embedding_func = EmbeddingFunc(
+            embedding_dim=args.embedding_dim,
+            max_token_size=args.max_embed_tokens,
+            func=lambda texts: lollms_embed(
+                texts,
+                embed_model=args.embedding_model,
+                host=args.embedding_binding_host,
+                api_key=args.embedding_binding_api_key,
+            )
+            if args.embedding_binding == "lollms"
+            else ollama_embed(
+                texts,
+                embed_model=args.embedding_model,
+                host=args.embedding_binding_host,
+                api_key=args.embedding_binding_api_key,
+            )
+            if args.embedding_binding == "ollama"
+            else azure_openai_embed(
+                texts,
+                model=args.embedding_model,  # no host is used for openai,
+                api_key=args.embedding_binding_api_key,
+            )
+            if args.embedding_binding == "azure_openai"
+            else openai_embed(
+                texts,
+                model=args.embedding_model,
+                base_url=args.embedding_binding_host,
+                api_key=args.embedding_binding_api_key,
+            ),
         )
-        if args.embedding_binding == "lollms"
-        else ollama_embed(
-            texts,
-            embed_model=args.embedding_model,
-            host=args.embedding_binding_host,
-            api_key=args.embedding_binding_api_key,
-        )
-        if args.embedding_binding == "ollama"
-        else azure_openai_embed(
-            texts,
-            model=args.embedding_model,  # no host is used for openai,
-            api_key=args.embedding_binding_api_key,
-        )
-        if args.embedding_binding == "azure_openai"
-        else openai_embed(
-            texts,
-            model=args.embedding_model,
-            base_url=args.embedding_binding_host,
-            api_key=args.embedding_binding_api_key,
-        ),
-    )
 
     # Initialize RAG
     if args.llm_binding in ["lollms", "ollama", "openai"]:

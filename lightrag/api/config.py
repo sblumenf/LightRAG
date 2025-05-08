@@ -289,6 +289,15 @@ def parse_args() -> argparse.Namespace:
     args.embedding_dim = get_env_value("EMBEDDING_DIM", 1024, int)
     args.max_embed_tokens = get_env_value("MAX_EMBED_TOKENS", 8192, int)
 
+    # Enhanced embedding configuration
+    args.enhanced_embedding_enabled = get_env_value("ENHANCED_EMBEDDING_ENABLED", False, bool)
+    args.enhanced_embedding_provider = get_env_value("ENHANCED_EMBEDDING_PROVIDER", "openai")
+    args.enhanced_embedding_batch_size = get_env_value("ENHANCED_EMBEDDING_BATCH_SIZE", 32, int)
+    args.enhanced_embedding_max_retries = get_env_value("ENHANCED_EMBEDDING_MAX_RETRIES", 3, int)
+    args.enhanced_embedding_retry_delay = get_env_value("ENHANCED_EMBEDDING_RETRY_DELAY", 1.0, float)
+    args.enhanced_embedding_openai_model = get_env_value("ENHANCED_EMBEDDING_OPENAI_MODEL", "text-embedding-3-small")
+    args.enhanced_embedding_google_model = get_env_value("ENHANCED_EMBEDDING_GOOGLE_MODEL", "models/embedding-001")
+
     # Inject chunk configuration
     args.chunk_size = get_env_value("CHUNK_SIZE", 1200, int)
     args.chunk_overlap_size = get_env_value("CHUNK_OVERLAP_SIZE", 100, int)

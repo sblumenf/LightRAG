@@ -18,6 +18,7 @@ warnings.filterwarnings("ignore", message=".*swigvarlink.*")
 warnings.filterwarnings("ignore", message=".*SwigPyPacked.*")
 warnings.filterwarnings("ignore", message=".*SwigPyObject.*")
 warnings.filterwarnings("ignore", message=".*importlib._bootstrap.*")
+warnings.filterwarnings("ignore", message=".*NumPy module was reloaded.*")
 
 from lightrag import LightRAG
 from lightrag.utils import EmbeddingFunc, setup_logger
