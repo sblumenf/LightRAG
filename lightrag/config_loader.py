@@ -58,11 +58,23 @@ class EnhancedConfig:
         self.enable_formula_analysis = get_env_value("ENABLE_FORMULA_ANALYSIS", True, bool)
         self.enable_cot = get_env_value("ENABLE_COT", True, bool)
 
-        # Entity resolution thresholds
+        # Entity resolution settings
         self.entity_resolution_name_threshold = get_env_value("ENTITY_RESOLUTION_NAME_THRESHOLD", 0.8, float)
         self.entity_resolution_embedding_threshold = get_env_value("ENTITY_RESOLUTION_EMBEDDING_THRESHOLD", 0.85, float)
         self.entity_resolution_context_threshold = get_env_value("ENTITY_RESOLUTION_CONTEXT_THRESHOLD", 0.7, float)
+        self.entity_resolution_final_threshold = get_env_value("ENTITY_RESOLUTION_FINAL_THRESHOLD", 0.85, float)
         self.entity_resolution_merge_weight_property = get_env_value("ENTITY_RESOLUTION_MERGE_WEIGHT_PROPERTY", 0.2, float)
+
+        # Entity resolution weights
+        self.entity_resolution_weight_name = get_env_value("ENTITY_RESOLUTION_WEIGHT_NAME", 0.3, float)
+        self.entity_resolution_weight_alias = get_env_value("ENTITY_RESOLUTION_WEIGHT_ALIAS", 0.15, float)
+        self.entity_resolution_weight_embedding = get_env_value("ENTITY_RESOLUTION_WEIGHT_EMBEDDING", 0.35, float)
+        self.entity_resolution_weight_context = get_env_value("ENTITY_RESOLUTION_WEIGHT_CONTEXT", 0.2, float)
+
+        # Entity resolution batch settings
+        self.entity_resolution_batch_size = get_env_value("ENTITY_RESOLUTION_BATCH_SIZE", 100, int)
+        self.entity_resolution_candidate_limit = get_env_value("ENTITY_RESOLUTION_CANDIDATE_LIMIT", 10, int)
+        self.entity_resolution_string_similarity_method = get_env_value("ENTITY_RESOLUTION_STRING_SIMILARITY_METHOD", "fuzzy_ratio")
 
         # Diagram settings
         self.diagram_detection_threshold = get_env_value("DIAGRAM_DETECTION_THRESHOLD", 0.6, float)
