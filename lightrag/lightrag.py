@@ -71,6 +71,8 @@ from .utils import (
 )
 from .types import KnowledgeGraph
 from .config_loader import get_enhanced_config
+from .query_processing import process_query, select_retrieval_strategy
+from .llm.advanced_generation import AdvancedGenerationManager
 from dotenv import load_dotenv
 
 # use the .env that is inside the current folder
@@ -369,6 +371,9 @@ class LightRAG:
         if hasattr(self, "log_file_path"):
             delattr(self, "log_file_path")
 
+        # Initialize advanced generation manager
+        self.advanced_generation_manager = None
+
         initialize_share_data()
 
         if not os.path.exists(self.working_dir):
@@ -497,6 +502,14 @@ class LightRAG:
         # Initialize schema loader and classifier if schema classification is enabled
         self.schema_loader = None
         self.schema_classifier = None
+
+        # Initialize advanced generation manager if CoT is enabled
+        if self.enable_cot:
+            logger.info("Initializing advanced generation manager for Chain-of-Thought reasoning")
+            self.advanced_generation_manager = AdvancedGenerationManager(
+                llm_provider="openai",  # TODO: Make this configurable
+                llm_func=self.llm_model_func
+            )
 
         if self.enable_schema_classification and os.path.exists(self.schema_file_path):
             try:
@@ -1542,41 +1555,65 @@ class LightRAG:
         """
         # If a custom model is provided in param, temporarily update global config
         global_config = asdict(self)
+        config = get_enhanced_config()
+        query_text = query.strip()
 
+        # Process query if intelligent retrieval is enabled
+        if param.use_intelligent_retrieval and config.enable_intelligent_retrieval:
+            # Use the model function from param if provided, otherwise use the global model function
+            use_llm_func = param.model_func or global_config["llm_model_func"]
+
+            try:
+                # Process the query to extract intent, entities, keywords, etc.
+                query_analysis = await process_query(query_text, use_llm_func)
+                param.query_analysis = query_analysis
+
+                # If mode is "auto", select the best retrieval strategy
+                if param.mode == "auto" and config.auto_strategy_selection:
+                    selected_strategy = select_retrieval_strategy(query_analysis)
+                    logger.info(f"Auto strategy selection chose: {selected_strategy} for query: '{query_text[:50]}...'")
+                    param.mode = selected_strategy
+
+                # Log the query analysis
+                logger.debug(f"Query analysis: {query_analysis}")
+
+                # Use expanded query if available
+                if query_analysis.get("expanded_query"):
+                    expanded_query = query_analysis["expanded_query"]
+                    logger.debug(f"Using expanded query: {expanded_query}")
+                    # Keep original query for response generation but use expanded query for retrieval
+                    query_text = expanded_query
+
+                # Extract keywords from query analysis if not already provided
+                if not param.hl_keywords and query_analysis.get("keywords"):
+                    param.hl_keywords = query_analysis["keywords"]
+
+            except Exception as e:
+                logger.error(f"Error in query processing: {str(e)}")
+                # Continue with original query and mode if query processing fails
+                logger.warning(f"Continuing with original query and mode: {param.mode}")
+
+        # Retrieve context based on selected mode
         if param.mode in ["local", "global", "hybrid"]:
-            response = await kg_query(
-                query.strip(),
-                self.chunk_entity_relation_graph,
-                self.entities_vdb,
-                self.relationships_vdb,
-                self.text_chunks,
+            # Get context from knowledge graph
+            context_items = await self._retrieve_kg_context(
+                query_text,
                 param,
-                global_config,
-                hashing_kv=self.llm_response_cache,  # Directly use llm_response_cache
-                system_prompt=system_prompt,
+                global_config
             )
         elif param.mode == "naive":
-            response = await naive_query(
-                query.strip(),
-                self.chunks_vdb,
-                self.text_chunks,
+            # Get context from vector store
+            context_items = await self._retrieve_vector_context(
+                query_text,
                 param,
-                global_config,
-                hashing_kv=self.llm_response_cache,  # Directly use llm_response_cache
-                system_prompt=system_prompt,
+                global_config
             )
         elif param.mode == "mix":
-            response = await mix_kg_vector_query(
-                query.strip(),
-                self.chunk_entity_relation_graph,
-                self.entities_vdb,
-                self.relationships_vdb,
-                self.chunks_vdb,
-                self.text_chunks,
+            # Get context from both knowledge graph and vector store
+            context_items = await self._retrieve_mixed_context(
+                query_text,
                 param,
-                global_config,
-                hashing_kv=self.llm_response_cache,  # Directly use llm_response_cache
-                system_prompt=system_prompt,
+                global_config
             )
         elif param.mode == "bypass":
             # Bypass mode: directly use LLM without knowledge retrieval
@@ -1591,8 +1628,55 @@ class LightRAG:
                 history_messages=param.conversation_history,
                 stream=param.stream,
             )
+            await self._query_done()
+            return response
         else:
             raise ValueError(f"Unknown mode {param.mode}")
+
+        # Generate response using advanced generation if enabled
+        if self.enable_cot and self.advanced_generation_manager:
+            logger.info("Using Chain-of-Thought for response generation")
+            response = await self.advanced_generation_manager.generate_response(
+                query_text,
+                context_items
+            )
+        else:
+            # Use standard generation based on mode
+            if param.mode in ["local", "global", "hybrid"]:
+                response = await kg_query(
+                    query_text,
+                    self.chunk_entity_relation_graph,
+                    self.entities_vdb,
+                    self.relationships_vdb,
+                    self.text_chunks,
+                    param,
+                    global_config,
+                    hashing_kv=self.llm_response_cache,
+                    system_prompt=system_prompt,
+                )
+            elif param.mode == "naive":
+                response = await naive_query(
+                    query_text,
+                    self.chunks_vdb,
+                    self.text_chunks,
+                    param,
+                    global_config,
+                    hashing_kv=self.llm_response_cache,
+                    system_prompt=system_prompt,
+                )
+            elif param.mode == "mix":
+                response = await mix_kg_vector_query(
+                    query_text,
+                    self.chunk_entity_relation_graph,
+                    self.entities_vdb,
+                    self.relationships_vdb,
+                    self.chunks_vdb,
+                    self.text_chunks,
+                    param,
+                    global_config,
+                    hashing_kv=self.llm_response_cache,
+                    system_prompt=system_prompt,
+                )
         await self._query_done()
         return response
 
@@ -1646,6 +1730,113 @@ class LightRAG:
 
         await self._query_done()
         return response
+
+    async def _retrieve_kg_context(self, query_text, param, global_config):
+        """
+        Retrieve context from knowledge graph.
+
+        Args:
+            query_text: The query text
+            param: Query parameters
+            global_config: Global configuration
+
+        Returns:
+            List of context items
+        """
+        # Get entities and relationships from knowledge graph
+        kg_results = await self.chunk_entity_relation_graph.query(
+            query_text,
+            param.top_k,
+            param.query_analysis.get("entities", []) if param.query_analysis else [],
+            param.hl_keywords or [],
+            param.max_depth,
+            param.max_nodes,
+        )
+
+        # Format results as context items
+        context_items = []
+
+        # Add entities
+        for entity_id, entity_data in kg_results.nodes.items():
+            context_items.append({
+                "id": entity_id,
+                "entity_type": entity_data.get("entity_type", "Unknown"),
+                "name": entity_data.get("name", entity_id),
+                "description": entity_data.get("description", ""),
+                "source": "knowledge_graph"
+            })
+
+        # Add relationships
+        for edge_id, edge_data in kg_results.edges.items():
+            source_id, target_id = edge_id
+            context_items.append({
+                "id": f"{source_id}_{target_id}",
+                "relationship_type": edge_data.get("relationship_type", "RELATED_TO"),
+                "source_id": source_id,
+                "target_id": target_id,
+                "description": edge_data.get("description", ""),
+                "source": "knowledge_graph"
+            })
+
+        return context_items
+
+    async def _retrieve_vector_context(self, query_text, param, global_config):
+        """
+        Retrieve context from vector store.
+
+        Args:
+            query_text: The query text
+            param: Query parameters
+            global_config: Global configuration
+
+        Returns:
+            List of context items
+        """
+        # Get chunks from vector store
+        vector_results = await self.chunks_vdb.query(
+            query_text,
+            param.top_k,
+            param.cosine_threshold,
+            param.hl_keywords or [],
+        )
+
+        # Format results as context items
+        context_items = []
+
+        for chunk_id, chunk_data in vector_results.items():
+            # Get full chunk data from text chunks
+            full_chunk = await self.text_chunks.get_by_id(chunk_id)
+
+            if full_chunk:
+                context_items.append({
+                    "id": chunk_id,
+                    "content": full_chunk.get("content", ""),
+                    "file_path": full_chunk.get("file_path", ""),
+                    "source": "vector_store"
+                })
+
+        return context_items
+
+    async def _retrieve_mixed_context(self, query_text, param, global_config):
+        """
+        Retrieve context from both knowledge graph and vector store.
+
+        Args:
+            query_text: The query text
+            param: Query parameters
+            global_config: Global configuration
+
+        Returns:
+            List of context items
+        """
+        # Get context from both sources
+        kg_context = await self._retrieve_kg_context(query_text, param, global_config)
+        vector_context = await self._retrieve_vector_context(query_text, param, global_config)
+
+        # Combine results
+        context_items = kg_context + vector_context
+
+        return context_items
 
     async def _query_done(self):
         await self.llm_response_cache.index_done_callback()

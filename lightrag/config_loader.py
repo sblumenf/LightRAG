@@ -56,7 +56,11 @@ class EnhancedConfig:
         # Feature flags
         self.enable_diagram_analysis = get_env_value("ENABLE_DIAGRAM_ANALYSIS", True, bool)
         self.enable_formula_analysis = get_env_value("ENABLE_FORMULA_ANALYSIS", True, bool)
+
+        # Chain-of-Thought settings
         self.enable_cot = get_env_value("ENABLE_COT", True, bool)
+        self.max_cot_refinement_attempts = get_env_value("MAX_COT_REFINEMENT_ATTEMPTS", 2, int)
+        self.enable_enhanced_citations = get_env_value("ENABLE_ENHANCED_CITATIONS", True, bool)
 
         # Entity resolution settings
         self.entity_resolution_name_threshold = get_env_value("ENTITY_RESOLUTION_NAME_THRESHOLD", 0.8, float)
@@ -98,6 +102,24 @@ class EnhancedConfig:
         # Schema entity types for entity-aware chunking
         entity_types_str = get_env_value("SCHEMA_ENTITY_TYPES", "")
         self.schema_entity_types = [t.strip() for t in entity_types_str.split(",")] if entity_types_str else []
+
+        # Query processing settings
+        self.enable_intelligent_retrieval = get_env_value("ENABLE_INTELLIGENT_RETRIEVAL", True, bool)
+        self.query_analysis_confidence_threshold = get_env_value("QUERY_ANALYSIS_CONFIDENCE_THRESHOLD", 0.7, float)
+        self.auto_strategy_selection = get_env_value("AUTO_STRATEGY_SELECTION", True, bool)
+        self.default_retrieval_strategy = get_env_value("DEFAULT_RETRIEVAL_STRATEGY", "hybrid")
+        self.retrieval_similarity_threshold = get_env_value("RETRIEVAL_SIMILARITY_THRESHOLD", 0.6, float)
+        self.retrieval_max_related_depth = get_env_value("RETRIEVAL_MAX_RELATED_DEPTH", 2, int)
+        self.retrieval_limit = get_env_value("RETRIEVAL_LIMIT", 60, int)
+
+        # Query intent indicators
+        graph_indicators_str = get_env_value("GRAPH_INTENT_INDICATORS",
+            "related,connected,relationship,connection,link,between,compare,difference,similar,versus,vs,contrast,cause,effect,impact,influence")
+        self.graph_intent_indicators = [t.strip() for t in graph_indicators_str.split(",")] if graph_indicators_str else []
+
+        vector_indicators_str = get_env_value("VECTOR_INTENT_INDICATORS",
+            "like,similar to,example of,such as,about,concept of,definition,meaning,explain,describe,summarize")
+        self.vector_intent_indicators = [t.strip() for t in vector_indicators_str.split(",")] if vector_indicators_str else []
 
 
 # Create a singleton instance

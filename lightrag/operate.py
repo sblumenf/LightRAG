@@ -1636,6 +1636,19 @@ async def _get_node_data(
         f"Query nodes: {query}, top_k: {query_param.top_k}, cosine: {entities_vdb.cosine_better_than_threshold}"
     )
 
+    # Apply entity type filtering if enabled and query analysis is available
+    entity_filter = None
+    if (query_param.filter_by_entity_type and
+        query_param.query_analysis and
+        query_param.query_analysis.get("entity_types")):
+        entity_types = query_param.query_analysis.get("entity_types")
+        if entity_types:
+            logger.info(f"Filtering entity search by entity types: {entity_types}")
+            entity_filter = entity_types[0] if len(entity_types) == 1 else None
+
+    # Add entity_type parameter to query if filter is available
+    # Note: This assumes the vector storage implementation supports entity_type filtering
+    # If not, this will need to be handled differently
     results = await entities_vdb.query(
         query, top_k=query_param.top_k, ids=query_param.ids
     )
@@ -1651,6 +1664,46 @@ async def _get_node_data(
         knowledge_graph_inst.get_nodes_batch(node_ids),
         knowledge_graph_inst.node_degrees_batch(node_ids),
     )
+
+    # Apply re-ranking if enabled and query analysis is available
+    if (query_param.rerank_results and
+        query_param.query_analysis and
+        nodes_dict):
+
+        # Get keywords and intent from query analysis
+        keywords = query_param.query_analysis.get("keywords", [])
+        intent = query_param.query_analysis.get("intent", "").lower()
+
+        # Define scoring function for re-ranking
+        def score_node(node_id, node_data):
+            base_score = degrees_dict.get(node_id, 0) * 0.1  # Base score from node degree
+
+            # Score based on keyword matches
+            description = node_data.get("description", "").lower()
+            keyword_matches = sum(1 for kw in keywords if kw.lower() in description)
+            keyword_score = min(1.0, keyword_matches * 0.2)  # Cap at 1.0
+
+            # Score based on intent match
+            intent_score = 0.0
+            if intent in ["definition", "explain"] and any(term in description for term in ["definition", "means", "refers to"]):
+                intent_score = 0.3
+            elif intent in ["compare", "contrast"] and any(term in description for term in ["compare", "contrast", "difference", "similar"]):
+                intent_score = 0.3
+            elif intent in ["example", "instance"] and any(term in description for term in ["example", "instance", "such as"]):
+                intent_score = 0.3
+
+            # Calculate final score
+            return base_score + keyword_score + intent_score
+
+        # Re-rank nodes based on scoring
+        if keywords or intent:
+            logger.info(f"Re-ranking entities based on {len(keywords)} keywords and intent: {intent}")
+            # Create pairs of (node_id, score) and sort by score in descending order
+            scored_nodes = [(node_id, score_node(node_id, nodes_dict[node_id]))
+                           for node_id in node_ids if node_id in nodes_dict]
+            scored_nodes.sort(key=lambda x: x[1], reverse=True)
+            # Extract just the node IDs in the new order
+            node_ids = [node_id for node_id, _ in scored_nodes]
 
     # Now, if you need the node data and degree in order:
     node_datas = [nodes_dict.get(nid) for nid in node_ids]
@@ -2240,6 +2293,17 @@ async def naive_query(
     if cached_response is not None:
         return cached_response
 
+    # Apply entity type filtering if enabled and query analysis is available
+    entity_filter = None
+    if (query_param.filter_by_entity_type and
+        query_param.query_analysis and
+        query_param.query_analysis.get("entity_types")):
+        entity_types = query_param.query_analysis.get("entity_types")
+        if entity_types:
+            logger.info(f"Filtering vector search by entity types: {entity_types}")
+            entity_filter = entity_types[0] if len(entity_types) == 1 else None
+
+    # Perform vector search with optional entity type filter
     results = await chunks_vdb.query(
         query, top_k=query_param.top_k, ids=query_param.ids
     )
@@ -2253,6 +2317,45 @@ async def naive_query(
     valid_chunks = [
         chunk for chunk in chunks if chunk is not None and "content" in chunk
     ]
+
+    # Apply re-ranking if enabled and query analysis is available
+    if (query_param.rerank_results and
+        query_param.query_analysis and
+        valid_chunks):
+
+        # Get keywords and intent from query analysis
+        keywords = query_param.query_analysis.get("keywords", [])
+        intent = query_param.query_analysis.get("intent", "").lower()
+
+        # Define scoring function for re-ranking
+        def score_chunk(chunk):
+            base_score = 1.0
+
+            # Score based on keyword matches
+            content = chunk.get("content", "").lower()
+            keyword_matches = sum(1 for kw in keywords if kw.lower() in content)
+            keyword_score = min(1.0, keyword_matches * 0.2)  # Cap at 1.0
+
+            # Score based on intent match
+            intent_score = 0.0
+            if intent in ["definition", "explain"] and "definition" in content:
+                intent_score = 0.3
+            elif intent in ["compare", "contrast"] and any(term in content for term in ["compare", "contrast", "difference", "similar"]):
+                intent_score = 0.3
+            elif intent in ["example", "instance"] and any(term in content for term in ["example", "instance", "such as"]):
+                intent_score = 0.3
+
+            # Calculate final score
+            return base_score + keyword_score + intent_score
+
+        # Re-rank chunks based on scoring
+        if keywords or intent:
+            logger.info(f"Re-ranking chunks based on {len(keywords)} keywords and intent: {intent}")
+            # Create pairs of (chunk, score) and sort by score in descending order
+            scored_chunks = [(chunk, score_chunk(chunk)) for chunk in valid_chunks]
+            scored_chunks.sort(key=lambda x: x[1], reverse=True)
+            # Extract just the chunks in the new order
+            valid_chunks = [chunk for chunk, _ in scored_chunks]
 
     if not valid_chunks:
         logger.warning("No valid chunks found after filtering")

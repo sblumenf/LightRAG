@@ -35,13 +35,14 @@ T = TypeVar("T")
 class QueryParam:
     """Configuration parameters for query execution in LightRAG."""
 
-    mode: Literal["local", "global", "hybrid", "naive", "mix", "bypass"] = "global"
+    mode: Literal["local", "global", "hybrid", "naive", "mix", "bypass", "auto"] = "global"
     """Specifies the retrieval mode:
     - "local": Focuses on context-dependent information.
     - "global": Utilizes global knowledge.
     - "hybrid": Combines local and global retrieval methods.
     - "naive": Performs a basic search without advanced techniques.
     - "mix": Integrates knowledge graph and vector retrieval.
+    - "auto": Automatically selects the best retrieval strategy based on query analysis.
     """
 
     only_need_context: bool = False
@@ -91,6 +92,26 @@ class QueryParam:
     """Optional override for the LLM model function to use for this specific query.
     If provided, this will be used instead of the global model function.
     This allows using different models for different query modes.
+    """
+
+    use_intelligent_retrieval: bool = True
+    """If True, enables intelligent query processing and strategy selection.
+    When enabled with mode="auto", the system will analyze the query and select the best retrieval strategy.
+    """
+
+    query_analysis: dict[str, Any] | None = None
+    """Stores the results of query analysis when intelligent retrieval is used.
+    This includes entity types, keywords, intent, and expanded query.
+    """
+
+    filter_by_entity_type: bool = True
+    """If True, filters retrieval results by entity types identified in query analysis.
+    Only applies when intelligent retrieval is enabled.
+    """
+
+    rerank_results: bool = True
+    """If True, reranks retrieval results based on query analysis.
+    Only applies when intelligent retrieval is enabled.
     """
 
 

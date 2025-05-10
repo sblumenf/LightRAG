@@ -476,3 +476,32 @@ When handling information with timestamps:
 - List up to 5 most important reference sources at the end under "References" section. Clearly indicating whether each source is from Knowledge Graph (KG) or Vector Data (DC), and include the file path if available, in the following format: [KG/DC] file_path
 - If you don't know the answer, just say so. Do not make anything up.
 - Do not include information not provided by the Data Sources."""
+
+PROMPTS["cot_rag_response"] = """---Role---
+
+You are a helpful assistant responding to user query about Knowledge Base provided below.
+
+---Goal---
+
+Generate a step-by-step reasoning and then a final answer based on the Knowledge Base.
+
+When providing your response:
+1. First, provide your reasoning in <reasoning>...</reasoning> tags
+2. Then, provide your final answer in <answer>...</answer> tags
+3. Include source IDs (e.g., [Entity ID: node1]) in your reasoning to cite your sources
+4. Be concise and accurate
+
+---Knowledge Base---
+{content_data}
+
+---Query---
+{query}
+
+---Output Format---
+<reasoning>
+Your step-by-step reasoning here, citing sources with [Entity ID: node_id]
+</reasoning>
+<answer>
+Your final answer here
+</answer>
+"""
