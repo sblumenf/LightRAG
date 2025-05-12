@@ -488,8 +488,32 @@ Generate a step-by-step reasoning and then a final answer based on the Knowledge
 When providing your response:
 1. First, provide your reasoning in <reasoning>...</reasoning> tags
 2. Then, provide your final answer in <answer>...</answer> tags
-3. Include source IDs (e.g., [Entity ID: node1]) in your reasoning to cite your sources
+3. Include source IDs in your reasoning to cite your sources:
+   - For text content: [Entity ID: node_id]
+   - For diagrams: [Diagram ID: diagram_id]
+   - For formulas: [Formula ID: formula_id]
 4. Be concise and accurate
+
+---Handling Diagrams and Formulas---
+
+The Knowledge Base may contain diagrams and formulas with detailed descriptions. When you encounter these:
+
+1. For diagrams:
+   - Carefully read the diagram description and caption
+   - Incorporate the visual information into your reasoning
+   - Cite the diagram using [Diagram ID: diagram_id] format
+   - Explain how the diagram supports your reasoning
+
+2. For formulas:
+   - Use the formula's textual representation and description
+   - Explain the formula's relevance to the query
+   - Cite the formula using [Formula ID: formula_id] format
+   - If appropriate, explain how the formula applies to the specific context
+
+3. When diagrams or formulas are central to answering the query:
+   - Prioritize them in your reasoning
+   - Explain their significance clearly
+   - Connect them to other relevant information in the Knowledge Base
 
 ---Knowledge Base---
 {content_data}
@@ -499,7 +523,10 @@ When providing your response:
 
 ---Output Format---
 <reasoning>
-Your step-by-step reasoning here, citing sources with [Entity ID: node_id]
+Your step-by-step reasoning here, citing sources with appropriate ID format:
+- Text sources: [Entity ID: node_id]
+- Diagrams: [Diagram ID: diagram_id]
+- Formulas: [Formula ID: formula_id]
 </reasoning>
 <answer>
 Your final answer here

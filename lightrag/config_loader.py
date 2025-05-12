@@ -62,6 +62,13 @@ class EnhancedConfig:
         self.max_cot_refinement_attempts = get_env_value("MAX_COT_REFINEMENT_ATTEMPTS", 2, int)
         self.enable_enhanced_citations = get_env_value("ENABLE_ENHANCED_CITATIONS", True, bool)
 
+        # Diagram and Formula integration settings
+        self.enable_diagram_formula_integration = get_env_value("ENABLE_DIAGRAM_FORMULA_INTEGRATION", True, bool)
+        self.resolve_placeholders_in_context = get_env_value("RESOLVE_PLACEHOLDERS_IN_CONTEXT", True, bool)
+        self.diagram_citation_format = get_env_value("DIAGRAM_CITATION_FORMAT", "[Diagram ID: {id}]")
+        self.formula_citation_format = get_env_value("FORMULA_CITATION_FORMAT", "[Formula ID: {id}]")
+        self.placeholder_output_format = get_env_value("PLACEHOLDER_OUTPUT_FORMAT", "detailed")
+
         # Entity resolution settings
         self.entity_resolution_name_threshold = get_env_value("ENTITY_RESOLUTION_NAME_THRESHOLD", 0.8, float)
         self.entity_resolution_embedding_threshold = get_env_value("ENTITY_RESOLUTION_EMBEDDING_THRESHOLD", 0.85, float)

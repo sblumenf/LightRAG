@@ -40,6 +40,8 @@
 
 ## 🎉 News
 
+- [X] [2025.05.15]🎯📢LightRAG now includes comprehensive benchmarking and evaluation tools for measuring performance and quality.
+- [X] [2025.04.01]🎯📢LightRAG now supports diagram and formula integration, enabling better handling of non-text elements.
 - [X] [2025.03.18]🎯📢LightRAG now supports citation functionality, enabling proper source attribution.
 - [X] [2025.02.05]🎯📢Our team has released [VideoRAG](https://github.com/HKUDS/VideoRAG) understanding extremely long-context videos.
 - [X] [2025.01.13]🎯📢Our team has released [MiniRAG](https://github.com/HKUDS/MiniRAG) making RAG simpler with small models.
@@ -246,6 +248,10 @@ A full list of LightRAG init parameters:
 | **addon_params** | `dict` | Additional parameters, e.g., `{"example_number": 1, "language": "Simplified Chinese", "entity_types": ["organization", "person", "geo", "event"]}`: sets example limit, entiy/relation extraction output language | `example_number: all examples, language: English` |
 | **convert_response_to_json_func** | `callable` | Not used | `convert_response_to_json` |
 | **embedding_cache_config** | `dict` | Configuration for question-answer caching. Contains three parameters: `enabled`: Boolean value to enable/disable cache lookup functionality. When enabled, the system will check cached responses before generating new answers. `similarity_threshold`: Float value (0-1), similarity threshold. When a new question's similarity with a cached question exceeds this threshold, the cached answer will be returned directly without calling the LLM. `use_llm_check`: Boolean value to enable/disable LLM similarity verification. When enabled, LLM will be used as a secondary check to verify the similarity between questions before returning cached answers. | Default: `{"enabled": False, "similarity_threshold": 0.95, "use_llm_check": False}` |
+| **enable_diagram_analysis** | `bool` | If `TRUE`, enables diagram extraction and analysis during document processing | `TRUE` |
+| **enable_formula_analysis** | `bool` | If `TRUE`, enables formula extraction and analysis during document processing | `TRUE` |
+| **enable_diagram_formula_integration** | `bool` | If `TRUE`, enables integration of diagram and formula descriptions in LLM responses | `TRUE` |
+| **resolve_placeholders_in_context** | `bool` | If `TRUE`, resolves diagram and formula placeholders in context before passing to LLM | `TRUE` |
 
 </details>
 
@@ -997,10 +1003,70 @@ These operations maintain data consistency across both the graph database and ve
 
 </details>
 
+## Benchmarking and Evaluation
+
+LightRAG includes comprehensive tools for benchmarking performance and evaluating quality. These tools help you measure the effectiveness of your RAG system and identify areas for improvement.
+
+### Benchmarking
+
+The benchmarking framework allows you to measure the performance of various LightRAG components, including:
+
+- Document processing and chunking
+- Entity resolution
+- Query processing
+- Retrieval
+- Response generation
+
+To run benchmarks, use the provided script:
+
+```bash
+# Run all benchmarks
+python scripts/run_benchmarks.py
+
+# Run specific benchmarks
+python scripts/run_benchmarks.py --run-chunking --run-retrieval
+
+# Run benchmarks with OpenAI
+python scripts/run_benchmarks.py --use-openai
+
+# Save benchmark results to a file
+python scripts/run_benchmarks.py --output benchmark_results.json
+
+# Generate plots of benchmark results
+python scripts/run_benchmarks.py --plot
+```
+
+### Qualitative Evaluation
+
+The evaluation framework allows you to assess the quality of LightRAG's knowledge graph, retrieval, and response generation:
+
+- Knowledge Graph Quality: Schema conformance, entity resolution, relationship quality
+- Retrieval Relevance: Relevance, diversity, coverage of retrieved results
+- Response Quality: Reasoning quality, citation quality, factual accuracy
+
+To run evaluations, use the provided script:
+
+```bash
+# Run all evaluations
+python scripts/run_evaluation.py
+
+# Run specific evaluations
+python scripts/run_evaluation.py --evaluate-kg --evaluate-retrieval
+
+# Run evaluations with OpenAI
+python scripts/run_evaluation.py --use-openai
+
+# Save evaluation results to a file
+python scripts/run_evaluation.py --output evaluation_results
+
+# Generate plots of evaluation results
+python scripts/run_evaluation.py --plot
+```
+
 ## Token Usage Tracking
 
 <details>
-<summary> <b>Overview and Usage</b> </summary>
+<summary> <b>Token Tracking</b> </summary>
 
 LightRAG provides a TokenTracker tool to monitor and manage token consumption by large language models. This feature is particularly useful for controlling API costs and optimizing performance.
 

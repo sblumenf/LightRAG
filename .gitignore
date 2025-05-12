@@ -67,3 +67,5 @@ test_*
 
 # Cline files
 memory-bank/
+
+**/.claude/settings.local.json

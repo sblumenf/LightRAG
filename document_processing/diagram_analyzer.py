@@ -496,3 +496,20 @@ class DiagramAnalyzer:
                 basic_desc += f". Dimensions: {diagram_data.get('width')}x{diagram_data.get('height')} pixels"
             
             return basic_desc
+
+# Add the missing detect_diagrams function that's being imported by tests
+def detect_diagrams(pdf_path: str, **kwargs) -> List[Dict[str, Any]]:
+    """
+    Detect diagrams in a PDF document.
+    
+    This function is a wrapper around DiagramAnalyzer for backward compatibility.
+    
+    Args:
+        pdf_path (str): Path to the PDF file
+        **kwargs: Additional arguments for diagram detection
+        
+    Returns:
+        List[Dict[str, Any]]: List of detected diagrams with metadata
+    """
+    analyzer = DiagramAnalyzer()
+    return analyzer.extract_diagrams_from_pdf(pdf_path, **kwargs)

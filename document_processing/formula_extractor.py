@@ -499,3 +499,20 @@ class FormulaExtractor:
             description += f". It seems related to the concept of '{context_snippet}' mentioned in the text"
 
         return description.strip() + "."
+
+# Wrapper function for FormulaExtractor.extract_formulas
+def extract_formulas(text: str, **kwargs) -> List[Dict[str, Any]]:
+    """
+    Extract formulas from text content.
+    
+    This is a wrapper around FormulaExtractor.extract_formulas for backward compatibility.
+    
+    Args:
+        text: Text content to analyze
+        **kwargs: Additional arguments for formula extraction
+        
+    Returns:
+        List[Dict[str, Any]]: List of extracted formulas with metadata
+    """
+    extractor = FormulaExtractor(**kwargs)
+    return extractor.extract_formulas(text)

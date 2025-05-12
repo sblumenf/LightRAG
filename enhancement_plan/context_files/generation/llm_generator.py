@@ -11,7 +11,7 @@ import json
 import time
 import importlib  # Added for test compatibility
 from typing import List, Dict, Any, Optional, Union, Tuple, Callable
-from config import settings
+from enhancement_plan.context_files.generation.config import settings
 import os
 from unittest.mock import MagicMock  # For test compatibility
 
@@ -90,28 +90,28 @@ class LLMGenerator:
         if llm_provider is not None:
             self.llm_provider = llm_provider
         else:
-            self.llm_provider = self.config.get('provider', settings.LLM_PROVIDER).lower()
+            self.llm_provider = self.config.get('provider', settings.default_llm_provider).lower()
 
         # Handle other parameters with same priority pattern
         if temperature is not None:
             self.temperature = temperature
         else:
-            self.temperature = self.config.get('temperature', settings.LLM_TEMPERATURE)
+            self.temperature = self.config.get('temperature', 0.7)  # Default temperature
 
         if max_tokens is not None:
             self.max_tokens = max_tokens
         else:
-            self.max_tokens = self.config.get('max_tokens', settings.LLM_MAX_TOKENS)
+            self.max_tokens = self.config.get('max_tokens', 1024)  # Default max tokens
 
         if max_context_length is not None:
             self.max_context_length = max_context_length
         else:
-            self.max_context_length = self.config.get('max_context_length', settings.LLM_MAX_CONTEXT_LENGTH)
+            self.max_context_length = self.config.get('max_context_length', 8192)  # Default max context length
 
         if max_refinement_attempts is not None:
             self.max_refinement_attempts = max_refinement_attempts
         else:
-            self.max_refinement_attempts = self.config.get('max_refinement_attempts', settings.LLM_MAX_REFINEMENT_ATTEMPTS)
+            self.max_refinement_attempts = self.config.get('max_refinement_attempts', settings.max_refinement_attempts)
 
         # Handle top_p with direct parameter priority
         if top_p is not None:
@@ -135,12 +135,12 @@ class LLMGenerator:
             else:
                 # Fallback to provider defaults from settings
                 if self.llm_provider == 'google' or self.llm_provider == 'gemini':
-                    self.model_name = settings.DEFAULT_GOOGLE_LLM_MODEL # Use Google default
+                    self.model_name = "gemini-pro" # Use Google default
                 elif self.llm_provider == 'openai':
-                    self.model_name = settings.DEFAULT_LLM_MODEL # Use OpenAI default (check settings.py)
+                    self.model_name = settings.default_llm_model # Use OpenAI default
                 else:
                     # Use a generic default or raise error if provider is unknown after config check
-                    self.model_name = settings.DEFAULT_LLM_MODEL # Fallback to general default
+                    self.model_name = settings.default_llm_model # Fallback to general default
                     logger.warning(f"Using default LLM model {self.model_name} for unsupported provider {self.llm_provider}")
 
         # Handle API key with direct parameter priority
@@ -206,6 +206,72 @@ class LLMGenerator:
         # Load standard prompt templates
         self.prompt_templates = self._load_default_templates()
 
+    def process_citations(self, text: str, context_items: List[Dict[str, Any]]) -> str:
+        """
+        Process citations in a response text.
+
+        This method looks for citations in the format [Entity ID: X] and replaces them
+        with numbered references, adding a sources section at the end.
+
+        Args:
+            text: The text containing citations
+            context_items: The context items used for generation
+
+        Returns:
+            str: Text with processed citations
+        """
+        # Check if there are any citations
+        citation_pattern = r"\[Entity ID: (.*?)\]"
+        citations = re.findall(citation_pattern, text)
+
+        if not citations:
+            return text
+
+        # Create a mapping of entity IDs to context items
+        context_map = {}
+        for item in context_items:
+            if "id" in item:
+                context_map[item["id"]] = item
+
+        # Replace citations with numbered references
+        numbered_text = text
+        sources = []
+
+        for i, entity_id in enumerate(citations, 1):
+            if entity_id in context_map:
+                # Replace the citation with a numbered reference
+                numbered_text = numbered_text.replace(f"[Entity ID: {entity_id}]", f"[{i}]")
+
+                # Add the source to the sources list
+                item = context_map[entity_id]
+                source_text = f"{i}. "
+
+                # Add entity type if available
+                if "entity_type" in item:
+                    source_text += f"{item['entity_type']}: "
+
+                # Add name or title if available
+                if "name" in item:
+                    source_text += item["name"]
+                elif "title" in item:
+                    source_text += item["title"]
+                else:
+                    source_text += entity_id
+
+                # Add source document if available
+                if "source" in item:
+                    source_text += f" (Source: {item['source']})"
+                elif "source_doc" in item:
+                    source_text += f" (Source: {item['source_doc']})"
+
+                sources.append(source_text)
+
+        # Add sources section if there are valid sources
+        if sources:
+            numbered_text += "\n\nSources:\n" + "\n".join(sources)
+
+        return numbered_text
+
     def _load_default_templates(self) -> Dict[str, Dict[str, str]]:
         """
         Load default prompt templates for various tasks.
@@ -229,14 +295,12 @@ class LLMGenerator:
                 """,
 
                 "cot": """
-                Answer the following question based on the provided context. Follow this structured reasoning process:
+                Answer the following question based on the provided context. Follow this structured format:
 
-                1. First, carefully analyze what the question is asking for and identify the key information needed
-                2. Break down the problem into smaller parts and tackle each one systematically
-                3. Consider multiple perspectives and possible approaches
-                4. Evaluate evidence from the provided context that supports each perspective
-                5. Use this reasoning to develop a comprehensive answer
-                6. Conclude with your final answer
+                1. First provide your step-by-step reasoning within <reasoning>...</reasoning> tags
+                2. Then provide your final answer within <answer>...</answer> tags
+                3. In your reasoning, cite specific information from the context using [Entity ID: X] format
+                4. Be thorough in your reasoning but concise in your final answer
 
                 Context:
                 {context}
@@ -244,7 +308,7 @@ class LLMGenerator:
                 Question:
                 {query}
 
-                Step-by-step thinking:
+                Response:
                 """,
 
                 "structured": """
@@ -279,15 +343,17 @@ class LLMGenerator:
                 """,
 
                 "cot": """
-                Explain the following financial concept based on the provided context. Follow this structured reasoning process:
+                Explain the following financial concept based on the provided context. Follow this structured format:
 
-                1. First, identify the core components and principles of this financial concept
-                2. Analyze how this concept fits within broader financial frameworks
-                3. Consider the practical applications and implications of this concept
-                4. Examine any mathematical or quantitative elements involved
-                5. Identify limitations, edge cases, or common misconceptions
-                6. Synthesize the above into a comprehensive explanation
-                7. Conclude with a concise definition that captures the essence of the concept
+                1. First provide your step-by-step reasoning within <reasoning>...</reasoning> tags, including:
+                   - Core components and principles of this financial concept
+                   - How this concept fits within broader financial frameworks
+                   - Practical applications and implications
+                   - Mathematical or quantitative elements involved
+                   - Limitations, edge cases, or common misconceptions
+                   - Citations to specific information from the context using [Entity ID: X] format
+
+                2. Then provide your final explanation within <answer>...</answer> tags
 
                 Context:
                 {context}
@@ -295,7 +361,7 @@ class LLMGenerator:
                 Financial Concept:
                 {query}
 
-                Step-by-step thinking about this financial concept:
+                Response:
                 """,
 
                 "structured": """
@@ -340,16 +406,19 @@ class LLMGenerator:
                 """,
 
                 "cot": """
-                Explain the following financial formula based on the provided context. Follow this structured reasoning process:
+                Explain the following financial formula based on the provided context. Follow this structured format:
 
-                1. First, identify the purpose and significance of this formula in finance
-                2. Break down each variable and component in the formula
-                3. Examine how these components interact mathematically
-                4. Consider how changes in each variable affect the outcome
-                5. Analyze the assumptions and limitations underlying the formula
-                6. Walk through a step-by-step calculation with example values
-                7. Reflect on how this formula is applied in real-world financial analysis
-                8. Conclude with a concise explanation of what the formula tells us
+                1. First provide your step-by-step reasoning within <reasoning>...</reasoning> tags, including:
+                   - Purpose and significance of this formula in finance
+                   - Breakdown of each variable and component in the formula
+                   - How these components interact mathematically
+                   - How changes in each variable affect the outcome
+                   - Assumptions and limitations underlying the formula
+                   - Step-by-step calculation with example values
+                   - Real-world applications in financial analysis
+                   - Citations to specific information from the context using [Entity ID: X] format
+
+                2. Then provide your final explanation within <answer>...</answer> tags
 
                 Context:
                 {context}
@@ -357,7 +426,7 @@ class LLMGenerator:
                 Formula:
                 {query}
 
-                Step-by-step analysis of this formula:
+                Response:
                 """,
 
                 "structured": """
@@ -1485,6 +1554,259 @@ Answer:
 
         return prompt
 
+    def create_cot_prompt(self, context: str, query: str) -> str:
+        """
+        Create a Chain-of-Thought prompt for query generation.
+
+        This method creates a prompt that instructs the LLM to provide step-by-step reasoning
+        before giving the final answer. The reasoning and answer are structured with XML tags
+        to make them easy to parse.
+
+        Args:
+            context: Context text to include in the prompt
+            query: User query that needs to be answered
+
+        Returns:
+            str: Formatted CoT prompt string
+        """
+        # Use the template from the prompt_templates if available
+        if hasattr(self, 'prompt_templates') and 'qa' in self.prompt_templates and 'cot' in self.prompt_templates['qa']:
+            template = self.prompt_templates['qa']['cot']
+            prompt = template.format(context=context, query=query)
+        else:
+            # Fallback to hardcoded template
+            prompt = f"""Answer the following question based on the provided context.
+
+Follow this structured format:
+1. First provide your step-by-step reasoning within <reasoning>...</reasoning> tags
+2. Then provide your final answer within <answer>...</answer> tags
+3. In your reasoning, cite specific information from the context using [Entity ID: X] format
+4. Be thorough in your reasoning but concise in your final answer
+
+Context:
+{context}
+
+Question:
+{query}
+
+Response:
+"""
+        return prompt
+
+    def extract_reasoning_and_answer(self, response: str) -> Dict[str, str]:
+        """
+        Extract reasoning and answer from a CoT response.
+
+        Args:
+            response: The response from the LLM with reasoning and answer
+
+        Returns:
+            Dict with 'reasoning' and 'answer' keys
+        """
+        # Default values in case extraction fails
+        result = {
+            "reasoning": "",
+            "answer": response
+        }
+
+        try:
+            # Extract reasoning using regex
+            reasoning_match = re.search(r"<reasoning>(.*?)</reasoning>", response, re.DOTALL)
+            if reasoning_match:
+                result["reasoning"] = reasoning_match.group(1).strip()
+
+            # Extract answer using regex
+            answer_match = re.search(r"<answer>(.*?)</answer>", response, re.DOTALL)
+            if answer_match:
+                result["answer"] = answer_match.group(1).strip()
+            elif not reasoning_match:
+                # If neither tag is found, treat the whole response as the answer
+                result["answer"] = response.strip()
+                logger.warning("CoT format not detected in response, using entire response as answer")
+
+            # Log extraction results
+            if reasoning_match and answer_match:
+                logger.debug("Successfully extracted reasoning and answer from CoT response")
+            elif reasoning_match:
+                logger.warning("Only reasoning extracted from CoT response, answer tag missing")
+            elif answer_match:
+                logger.warning("Only answer extracted from CoT response, reasoning tag missing")
+        except Exception as e:
+            logger.error(f"Error extracting reasoning and answer: {str(e)}")
+
+        return result
+
+    def _check_reasoning_quality(self, reasoning: str, context: str = None, cot_analysis: Dict[str, Any] = None, task_type: str = "default") -> bool:
+        """
+        Check if the reasoning is of sufficient quality.
+
+        Args:
+            reasoning: The reasoning to check
+            context: The context used for generation (optional)
+            cot_analysis: Analysis of the CoT reasoning (optional, for backward compatibility)
+            task_type: Type of task (optional, for backward compatibility)
+
+        Returns:
+            bool: True if reasoning is good quality, False if it needs refinement
+        """
+        # For backward compatibility with existing code
+        if isinstance(reasoning, dict) and context is None:
+            # Test compatibility mode - return boolean based on reasoning quality
+            reasoning_quality = reasoning.get("reasoning_quality", 0.0)
+            if reasoning_quality >= 0.7:
+                return True
+            else:
+                return False
+
+        # Handle the case when cot_analysis is a string (for test compatibility)
+        if isinstance(cot_analysis, str):
+            # Just use it as additional context
+            if context:
+                context = context + "\n" + cot_analysis
+            else:
+                context = cot_analysis
+            cot_analysis = None
+
+        # Skip check if reasoning is empty
+        if not reasoning:
+            return False
+
+        # Check if reasoning is too short (less than 100 characters)
+        if len(reasoning) < 100:
+            logger.debug("Reasoning too short, needs refinement")
+            return False
+
+        # Check if reasoning contains citations when context is provided
+        if context and "[Entity ID:" not in reasoning and len(context) > 200:
+            logger.debug("Reasoning lacks citations, needs refinement")
+            return False
+
+        # Check if reasoning has multiple paragraphs/sentences (indicating depth)
+        sentences = re.split(r'[.!?]\s+', reasoning)
+        if len(sentences) < 3:
+            logger.debug("Reasoning lacks depth (fewer than 3 sentences), needs refinement")
+            return False
+
+        return True
+
+    def _generate_refinement_prompt(self, original_prompt: str, original_response: str, cot_analysis: Dict[str, Any] = None, task_type: str = "default") -> str:
+        """
+        Generate a prompt for refining the reasoning.
+
+        Args:
+            original_prompt: The original prompt
+            original_response: The original response
+            cot_analysis: Analysis of the CoT reasoning (optional, for backward compatibility)
+            task_type: Type of task (optional, for backward compatibility)
+
+        Returns:
+            str: Prompt for refinement
+        """
+        # For test compatibility, make cot_analysis and task_type optional
+        # These parameters are not used in the current implementation
+
+        # Extract reasoning and answer
+        result = self.extract_reasoning_and_answer(original_response)
+
+        refinement_prompt = f"""{original_prompt}
+
+Your previous response had insufficient reasoning. Please provide more detailed reasoning with the following improvements:
+1. Include more step-by-step analysis
+2. Explicitly cite information from the context using [Entity ID: X] format
+3. Consider multiple perspectives or approaches
+4. Ensure your reasoning supports your final answer
+
+Your previous reasoning:
+{result['reasoning']}
+
+Please provide an improved response:
+"""
+        return refinement_prompt
+
+    def generate_with_cot(self, query: str, context: str, max_refinement_attempts: Optional[int] = None) -> Dict[str, Any]:
+        """
+        Generate a response using Chain-of-Thought reasoning with optional refinement.
+
+        Args:
+            query: The query to generate a response for
+            context: Context to include in the prompt
+            max_refinement_attempts: Maximum number of refinement attempts (overrides instance default)
+
+        Returns:
+            Dict: Generation result with text and metadata
+        """
+        # Use instance default if not specified
+        max_attempts = max_refinement_attempts if max_refinement_attempts is not None else self.max_refinement_attempts
+
+        # Create CoT prompt
+        prompt = self.create_cot_prompt(context, query)
+
+        # Initial generation
+        if self.llm_provider == 'google' or self.llm_provider == 'gemini':
+            result = self._call_gemini(prompt)
+        elif self.llm_provider == 'openai':
+            result = self._call_openai(prompt)
+        else:
+            raise LLMGenerationError(f"Unsupported LLM provider: {self.llm_provider}")
+
+        # Check if generation was successful
+        if not result.get("success", False):
+            logger.error(f"Initial CoT generation failed: {result.get('error', 'Unknown error')}")
+            return result
+
+        # Track refinement attempts
+        result["refinement_attempts"] = 0
+
+        # Extract reasoning and answer
+        extracted = self.extract_reasoning_and_answer(result["text"])
+
+        # Check if reasoning needs refinement
+        if max_attempts > 0 and not self._check_reasoning_quality(extracted["reasoning"], context):
+            logger.info("Initial reasoning needs refinement, attempting to improve")
+
+            # Refinement loop
+            for attempt in range(max_attempts):
+                # Generate refinement prompt
+                refinement_prompt = self._generate_refinement_prompt(prompt, result["text"])
+
+                # Generate refined response
+                if self.llm_provider == 'google' or self.llm_provider == 'gemini':
+                    refined_result = self._call_gemini(refinement_prompt)
+                elif self.llm_provider == 'openai':
+                    refined_result = self._call_openai(refinement_prompt)
+                else:
+                    break
+
+                # Check if refinement was successful
+                if not refined_result.get("success", False):
+                    logger.error(f"Refinement attempt {attempt+1} failed: {refined_result.get('error', 'Unknown error')}")
+                    break
+
+                # Extract reasoning and answer from refined response
+                refined_extracted = self.extract_reasoning_and_answer(refined_result["text"])
+
+                # Check if refined reasoning is better
+                if self._check_reasoning_quality(refined_extracted["reasoning"], context):
+                    logger.info(f"Refinement successful after {attempt+1} attempts")
+                    result = refined_result
+                    result["refinement_attempts"] = attempt + 1
+                    break
+
+                # Update result with latest refinement even if not ideal
+                result = refined_result
+                result["refinement_attempts"] = attempt + 1
+
+                # Stop after max attempts
+                if attempt + 1 >= max_attempts:
+                    logger.warning(f"Reached maximum refinement attempts ({max_attempts}), using best available response")
+
+        # Format the final response with reasoning and answer
+        extracted = self.extract_reasoning_and_answer(result["text"])
+        result["reasoning"] = extracted["reasoning"]
+        result["answer"] = extracted["answer"]
+
+        return result
+
     def generate_response(
         self,
         query: str,
@@ -1497,7 +1819,8 @@ Answer:
         schema_loader: Optional[Any] = None,
         max_citations: int = 5,
         # Remove default from max_refinement_attempts here, it's set in __init__
-        max_refinement_attempts: Optional[int] = None
+        max_refinement_attempts: Optional[int] = None,
+        use_cot: bool = False
     ) -> Dict[str, Any]:
         """
         Generate a response from a query and context items.
@@ -1555,113 +1878,209 @@ Answer:
                 logger.info(f"Adjusting context length to accommodate schema ({schema_token_estimate} tokens) - new limit: {adjusted_max_length}")
                 context = self._format_context(context_items, adjusted_max_length)
 
-        # Format prompt with schema information if available
-        prompt = self._format_prompt_with_schema(template, query, context, schema_context)
+        # Use Chain-of-Thought if requested
+        if use_cot or template_type == "cot":
+            logger.info("Using Chain-of-Thought for response generation")
 
-        # Call appropriate LLM
-        if self.llm_provider == 'gemini':
-            result = self._call_gemini(prompt)
-        elif self.llm_provider == 'openai':
-            result = self._call_openai(prompt)
+            # Use the generate_with_cot method
+            result = self.generate_with_cot(
+                query=query,
+                context=context,
+                max_refinement_attempts=max_refinement_attempts
+            )
+
+            # Process citations if requested
+            if include_citations and context_items:
+                logger.info("Processing citations in CoT response")
+                try:
+                    # Process citations in reasoning
+                    if result.get("reasoning"):
+                        cited_reasoning, reasoning_citations = self._format_citations(
+                            context_items, result["reasoning"], max_citations
+                        )
+                        result["reasoning"] = cited_reasoning
+                        result["reasoning_citations"] = reasoning_citations
+
+                    # Process citations in answer
+                    if result.get("answer"):
+                        cited_answer, answer_citations = self._format_citations(
+                            context_items, result["answer"], max_citations
+                        )
+                        result["answer"] = cited_answer
+                        result["answer_citations"] = answer_citations
+
+                    # Combine citations
+                    all_citations = []
+                    if "reasoning_citations" in result:
+                        all_citations.extend(result["reasoning_citations"])
+                    if "answer_citations" in result:
+                        all_citations.extend(result["answer_citations"])
+
+                    # Remove duplicates while preserving order
+                    seen = set()
+                    result["citations"] = [c for c in all_citations if not (c["id"] in seen or seen.add(c["id"]))]
+                except Exception as e:
+                    logger.error(f"Error processing citations in CoT response: {str(e)}")
+
+            # Format the final text with reasoning and answer
+            result["text"] = f"## Reasoning\n\n{result.get('reasoning', '')}\n\n## Answer\n\n{result.get('answer', '')}"
+
+            return result
         else:
-            logger.error(f"Unsupported LLM provider: {self.llm_provider}")
-            result = {
-                "text": f"Error: Unsupported LLM provider {self.llm_provider}",
+            # Format prompt with schema information if available
+            prompt = self._format_prompt_with_schema(template, query, context, schema_context)
+
+            # Call appropriate LLM for standard generation
+            if self.llm_provider == 'gemini':
+                result = self._call_gemini(prompt)
+            elif self.llm_provider == 'openai':
+                result = self._call_openai(prompt)
+            else:
+                logger.error(f"Unsupported LLM provider: {self.llm_provider}")
+                result = {
+                    "text": f"Error: Unsupported LLM provider {self.llm_provider}",
                 "success": False,
                 "error": f"Unsupported LLM provider: {self.llm_provider}"
             }
 
-        # If CoT template was used, analyze the response for reasoning patterns
-        if template_type == "cot" and result.get("success", False):
-            cot_analysis = self._analyze_cot_response(result["text"])
-            result["cot_analysis"] = cot_analysis
+        # If standard generation was used but with CoT template, extract reasoning and answer
+        if template_type == "cot" and result.get("success", False) and not use_cot:
+            # Extract reasoning and answer from the response
+            extracted = self.extract_reasoning_and_answer(result["text"])
+
+            # Add extracted parts to the result
+            result["reasoning"] = extracted["reasoning"]
+            result["answer"] = extracted["answer"]
+
+            # If reasoning is present, format the text with sections
+            if extracted["reasoning"]:
+                result["text"] = f"## Reasoning\n\n{extracted['reasoning']}\n\n## Answer\n\n{extracted['answer']}"
 
             # Use configured value if arg is None
             _max_refinement_attempts = max_refinement_attempts if max_refinement_attempts is not None else self.max_refinement_attempts
 
-            # For test compatibility - always set refinement_attempts to 0 initially
-            result["refinement_attempts"] = 0
+            # Skip refinement if max attempts is 0
+            if _max_refinement_attempts <= 0:
+                logger.debug("Skipping refinement (max_refinement_attempts <= 0)")
+            # Skip refinement if no reasoning was extracted
+            elif not extracted["reasoning"]:
+                logger.warning("Skipping refinement (no reasoning extracted)")
+            # Otherwise, check if refinement is needed
+            elif not self._check_reasoning_quality(extracted["reasoning"], context):
+                logger.info("Reasoning needs refinement, attempting to improve")
 
-            # Mock the _check_reasoning_quality method for test compatibility
-            def mock_check_reasoning_quality(*args, **kwargs):
-                # For test compatibility, always return False for the first check and True for the second
-                if result.get("refinement_attempts", 0) == 0:
-                    return False
-                return True
+                # Track refinement attempts
+                result["refinement_attempts"] = 0
+                attempts = 0
 
-            # Store the original method
-            original_check_method = self._check_reasoning_quality
+                # Refinement loop
+                while attempts < _max_refinement_attempts:
+                    # Generate refinement prompt
+                    refinement_prompt = self._generate_refinement_prompt(prompt, result["text"])
 
-            # If we're in a test environment (detected by checking if we have a test query)
-            if query == "What are interest rates?":
-                # Replace with mock method for test compatibility
-                self._check_reasoning_quality = mock_check_reasoning_quality
+                    # Call LLM with refined prompt
+                    if self.llm_provider == 'gemini':
+                        refined_result = self._call_gemini(refinement_prompt)
+                    elif self.llm_provider == 'openai':
+                        refined_result = self._call_openai(refinement_prompt)
+                    else:
+                        logger.error(f"Unsupported LLM provider for refinement: {self.llm_provider}")
+                        break
 
-                # For test compatibility, also mock the _generate_refinement_prompt method
-                original_generate_method = self._generate_refinement_prompt
-                def mock_generate_refinement_prompt(*args, **kwargs):
-                    return "Please improve your reasoning."
-                self._generate_refinement_prompt = mock_generate_refinement_prompt
+                    # If refinement was successful, update the result
+                    if refined_result.get("success", False):
+                        # Record original response for reference
+                        if "refinement_history" not in result:
+                            result["refinement_history"] = []
 
-                # For test compatibility, directly set the text to the expected value
-                # This is a special case just for the test
-                result["text"] = "This is an improved response with better reasoning."
+                        # Store previous response in history
+                        result["refinement_history"].append({
+                            "text": result["text"],
+                            "reasoning": extracted["reasoning"],
+                            "answer": extracted["answer"]
+                        })
 
-            # If iterative refinement is enabled and the response is insufficient
-            attempts = 0
-            # Use _max_refinement_attempts in the refinement loop condition
-            while (_max_refinement_attempts > 0 and
-                   attempts < _max_refinement_attempts and
-                   result.get("success", False) and
-                   not self._check_reasoning_quality(result["text"], cot_analysis, task_type)):
+                        # Extract reasoning and answer from refined response
+                        refined_extracted = self.extract_reasoning_and_answer(refined_result["text"])
 
-                logger.info(f"Response deemed insufficient, attempting refinement ({attempts+1}/{_max_refinement_attempts})")
+                        # Check if refined reasoning is better
+                        if self._check_reasoning_quality(refined_extracted["reasoning"], context):
+                            logger.info(f"Refinement successful after {attempts+1} attempts")
 
-                # Generate a refined prompt based on the analysis
-                refined_prompt = self._generate_refinement_prompt(prompt, result["text"], cot_analysis, task_type)
+                            # Update with refined response
+                            result["text"] = refined_result["text"]
+                            result["reasoning"] = refined_extracted["reasoning"]
+                            result["answer"] = refined_extracted["answer"]
+                            result["refinement_attempts"] = attempts + 1
 
-                # Call LLM with refined prompt
-                if self.llm_provider == 'gemini':
-                    refined_result = self._call_gemini(refined_prompt)
-                elif self.llm_provider == 'openai':
-                    refined_result = self._call_openai(refined_prompt)
-                else:
-                    logger.error(f"Unsupported LLM provider for refinement: {self.llm_provider}")
-                    break
+                            # Format the text with sections
+                            result["text"] = f"## Reasoning\n\n{refined_extracted['reasoning']}\n\n## Answer\n\n{refined_extracted['answer']}"
 
-                # If refinement was successful, update the result
-                if refined_result.get("success", False):
-                    # Record original response for reference
-                    if "refinement_history" not in result:
-                        result["refinement_history"] = []
+                            break
 
-                    # Store previous response in history
-                    result["refinement_history"].append({
-                        "text": result["text"],
-                        "cot_analysis": cot_analysis
-                    })
+                        # Update with latest refinement even if not ideal
+                        result["text"] = refined_result["text"]
+                        result["reasoning"] = refined_extracted["reasoning"]
+                        result["answer"] = refined_extracted["answer"]
+                        result["refinement_attempts"] = attempts + 1
 
-                    # Update with refined response
-                    result["text"] = refined_result["text"]
-                    result["original_text"] = result["refinement_history"][0]["text"]
-                    result["refinement_attempts"] = attempts + 1  # For test compatibility
+                    attempts += 1
 
-                    # Re-analyze the refined response
-                    cot_analysis = self._analyze_cot_response(result["text"])
-                    result["cot_analysis"] = cot_analysis
-
-                attempts += 1
-
-            # Restore original methods if we replaced them
-            if query == "What are interest rates?":
-                self._check_reasoning_quality = original_check_method
-                self._generate_refinement_prompt = original_generate_method
+                    # Stop after max attempts
+                    if attempts >= _max_refinement_attempts:
+                        logger.warning(f"Reached maximum refinement attempts ({_max_refinement_attempts}), using best available response")
+            else:
+                logger.debug("Reasoning quality is sufficient, no refinement needed")
 
         # Add citations if requested and successful
         if include_citations and result.get("success", False):
-            cited_text, citations = self._format_citations(context_items, result["text"], max_citations)
-            result["text_with_citations"] = cited_text
-            result["citations"] = citations
+            # Handle differently based on whether we have separate reasoning and answer
+            if "reasoning" in result and "answer" in result:
+                # Process citations in reasoning and answer separately
+                if result["reasoning"]:
+                    # First try to use our specialized process_citations method for Entity ID format
+                    if "[Entity ID:" in result["reasoning"]:
+                        result["reasoning"] = self.process_citations(result["reasoning"], context_items)
+                    # Fall back to the general citation method if no Entity IDs found
+                    else:
+                        cited_reasoning, reasoning_citations = self._format_citations(
+                            context_items, result["reasoning"], max_citations
+                        )
+                        result["reasoning"] = cited_reasoning
+                        result["reasoning_citations"] = reasoning_citations
+
+                if result["answer"]:
+                    # First try to use our specialized process_citations method for Entity ID format
+                    if "[Entity ID:" in result["answer"]:
+                        result["answer"] = self.process_citations(result["answer"], context_items)
+                    # Fall back to the general citation method if no Entity IDs found
+                    else:
+                        cited_answer, answer_citations = self._format_citations(
+                            context_items, result["answer"], max_citations
+                        )
+                        result["answer"] = cited_answer
+                        result["answer_citations"] = answer_citations
+
+                # Update the full text with the cited versions
+                result["text"] = f"## Reasoning\n\n{result['reasoning']}\n\n## Answer\n\n{result['answer']}"
+                result["text_with_citations"] = result["text"]  # They're already cited
+
+                # Combine citations if we used the general method
+                if "reasoning_citations" in result or "answer_citations" in result:
+                    all_citations = []
+                    if "reasoning_citations" in result:
+                        all_citations.extend(result["reasoning_citations"])
+                    if "answer_citations" in result:
+                        all_citations.extend(result["answer_citations"])
+
+                    # Remove duplicates while preserving order
+                    seen = set()
+                    result["citations"] = [c for c in all_citations if not (c["id"] in seen or seen.add(c["id"]))]
+            else:
+                # Standard citation processing for the whole text
+                cited_text, citations = self._format_citations(context_items, result["text"], max_citations)
+                result["text_with_citations"] = cited_text
+                result["citations"] = citations
 
         # Add final metadata including processing time
         result.update({

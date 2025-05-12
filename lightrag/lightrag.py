@@ -289,6 +289,12 @@ class LightRAG:
     enable_cot: bool = field(default=get_enhanced_config().enable_cot)
     """If True, enables Chain-of-Thought reasoning during query generation."""
 
+    enable_diagram_formula_integration: bool = field(default=get_enhanced_config().enable_diagram_formula_integration)
+    """If True, enables integration of diagram and formula descriptions in LLM responses."""
+
+    resolve_placeholders_in_context: bool = field(default=get_enhanced_config().resolve_placeholders_in_context)
+    """If True, resolves diagram and formula placeholders in context before passing to LLM."""
+
     # Entity Resolution
     # ---
 

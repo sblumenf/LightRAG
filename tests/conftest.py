@@ -118,3 +118,75 @@ async def lightrag_with_sample_doc(lightrag_instance: LightRAG, sample_doc_conte
     # For testing purposes, we don't need the actual document ID
     # We'll just return the instance and a placeholder ID
     return lightrag_instance, "sample_doc_id"
+
+
+@pytest.fixture
+def mock_llm_func():
+    """Return a mock LLM function for testing."""
+    from unittest.mock import AsyncMock
+
+    mock_func = AsyncMock()
+    mock_func.return_value = """
+    <reasoning>
+    Based on the provided context, I can see that LightRAG is a lightweight Knowledge Graph
+    Retrieval-Augmented Generation system [Entity ID: node1]. It supports multiple LLM backends
+    and provides efficient document processing [Entity ID: node2].
+    </reasoning>
+    <answer>
+    LightRAG is a lightweight Knowledge Graph RAG system that supports multiple LLM backends
+    and provides efficient document processing.
+    </answer>
+    """
+
+    return mock_func
+
+
+@pytest.fixture
+def sample_context_items():
+    """Return sample context items for testing."""
+    return [
+        {
+            "id": "node1",
+            "content": "LightRAG is a lightweight Knowledge Graph Retrieval-Augmented Generation system."
+        },
+        {
+            "id": "node2",
+            "content": "It supports multiple LLM backends and provides efficient document processing."
+        },
+        {
+            "id": "node3",
+            "content": "LightRAG includes diagram and formula handling capabilities.",
+            "extracted_elements": {
+                "diagrams": [
+                    {
+                        "diagram_id": "diagram-1",
+                        "description": "System architecture diagram",
+                        "caption": "Figure 1: System Architecture"
+                    }
+                ],
+                "formulas": [
+                    {
+                        "formula_id": "formula-1",
+                        "formula": "E = mc^2",
+                        "description": "Einstein's mass-energy equivalence"
+                    }
+                ]
+            }
+        }
+    ]
+
+
+@pytest.fixture
+def mock_config():
+    """Return a mock configuration for testing."""
+    from unittest.mock import MagicMock
+    from lightrag.config_loader import EnhancedConfig
+
+    config = MagicMock(spec=EnhancedConfig)
+    config.enable_cot = True
+    config.enable_enhanced_citations = True
+    config.enable_diagram_formula_integration = True
+    config.resolve_placeholders_in_context = True
+    config.max_cot_refinement_attempts = 2
+
+    return config
