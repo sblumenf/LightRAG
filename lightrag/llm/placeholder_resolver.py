@@ -178,7 +178,7 @@ class PlaceholderResolver:
         return text
 
     @lru_cache(maxsize=128)
-    def _format_diagram_description(self, diagram_id: str, caption: str, description: str, page: str, diagram_type: str) -> str:
+    def _format_diagram_description(self, diagram_id: str, caption: str, description: str, page: str, diagram_type: str, provider: str = None) -> str:
         """
         Format a diagram description for inclusion in text.
 
@@ -188,6 +188,7 @@ class PlaceholderResolver:
             description: Description of the diagram
             page: Page number of the diagram
             diagram_type: Type of the diagram
+            provider: Optional provider that generated the description
 
         Returns:
             str: Formatted diagram description
@@ -198,7 +199,13 @@ class PlaceholderResolver:
         if self.output_format == "concise":
             # Concise format - just the essential information
             if description:
-                return f"[DIAGRAM: {description}] {citation}"
+                # Truncate overly long descriptions for concise format
+                max_concise_length = 500
+                if len(description) > max_concise_length:
+                    desc_summary = description[:max_concise_length].rstrip() + "..."
+                else:
+                    desc_summary = description
+                return f"[DIAGRAM: {desc_summary}] {citation}"
             elif caption:
                 return f"[DIAGRAM: {caption}] {citation}"
             else:
@@ -214,7 +221,31 @@ class PlaceholderResolver:
 
             # Add description if available
             if description:
-                result += f"\nDescription: {description}"
+                # Format long descriptions with proper line breaks
+                lines = []
+                remaining = description
+                line_length = 120  # Max characters per line
+
+                while len(remaining) > line_length:
+                    # Find a good breaking point
+                    break_point = remaining[:line_length].rfind('. ')
+                    if break_point == -1:  # No good sentence break found
+                        break_point = remaining[:line_length].rfind(' ')
+                    if break_point == -1:  # No spaces found
+                        break_point = line_length
+
+                    lines.append(remaining[:break_point+1].strip())
+                    remaining = remaining[break_point+1:].strip()
+
+                if remaining:
+                    lines.append(remaining)
+
+                if len(lines) > 1:
+                    result += "\nDescription:"
+                    for line in lines:
+                        result += f"\n  {line}"
+                else:
+                    result += f"\nDescription: {description}"
             else:
                 # Basic description if none is available
                 result += f"\nDescription: Diagram on page {page}"
@@ -225,6 +256,10 @@ class PlaceholderResolver:
             # Add diagram type if available
             if diagram_type and diagram_type != 'general':
                 result += f"\nType: {diagram_type}"
+
+            # Add provider if available
+            if provider:
+                result += f"\nAnalyzed by: {provider.capitalize()}"
 
             # Add citation reference
             result += f"\nReference: {citation}"
@@ -247,9 +282,10 @@ class PlaceholderResolver:
         description = diagram.get('description', '')
         page = str(diagram.get('page', 'unknown'))
         diagram_type = diagram.get('diagram_type', '')
+        provider = diagram.get('provider', None)
 
         # Use the cached method
-        return self._format_diagram_description(diagram_id, caption, description, page, diagram_type)
+        return self._format_diagram_description(diagram_id, caption, description, page, diagram_type, provider)
 
     @lru_cache(maxsize=128)
     def _format_formula_description(self, formula_id: str, formula_text: str, textual_representation: str, description: str, latex: str) -> str:
