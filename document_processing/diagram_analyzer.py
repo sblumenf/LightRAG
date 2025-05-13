@@ -13,13 +13,21 @@ import io
 import json
 import time
 import pickle
-from typing import Dict, Any, List, Optional, Tuple, Union
+from typing import Dict, Any, List, Optional, Tuple, Union, Callable
 import re
 import numpy as np
 from pathlib import Path
 
-# Try to import necessary libraries with graceful fallbacks
+# Set up logging
 logger = logging.getLogger(__name__)
+
+# Try to import necessary libraries with graceful fallbacks
+try:
+    from document_processing.diagram_entity_extractor import DiagramEntityExtractor
+    DIAGRAM_ENTITY_EXTRACTOR_AVAILABLE = True
+except ImportError:
+    DIAGRAM_ENTITY_EXTRACTOR_AVAILABLE = False
+    logger.warning("DiagramEntityExtractor not available. Entity extraction from diagrams will be disabled.")
 
 try:
     import fitz  # PyMuPDF
@@ -336,6 +344,9 @@ class DiagramAnalyzer:
             # Initialize cache if enabled
             if self.enable_caching:
                 self._init_cache()
+
+        # Entity extraction flag
+        self.enable_entity_extraction = config.get('enable_diagram_entity_extraction', True) if config else True
 
     def _import_vision_registry(self):
         """Helper method to import vision registry (makes testing easier)."""
@@ -1037,6 +1048,67 @@ class DiagramAnalyzer:
 
         # Run the async method
         return loop.run_until_complete(self.generate_diagram_description(diagram_data, diagram_type))
+
+    async def extract_entities_and_relationships(self, diagram_data: Dict[str, Any], schema_validator, llm_func) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        """
+        Extract entities and relationships from a diagram for knowledge graph integration.
+
+        Args:
+            diagram_data: Dictionary containing diagram information
+            schema_validator: SchemaValidator instance
+            llm_func: LLM function for entity/relationship extraction
+
+        Returns:
+            Tuple of (entities, relationships)
+        """
+        if not self.enable_entity_extraction or not DIAGRAM_ENTITY_EXTRACTOR_AVAILABLE:
+            logger.warning("Diagram entity extraction is disabled or not available")
+            return [], []
+
+        # Get or generate diagram description
+        description = diagram_data.get('description')
+        if not description:
+            description = await self.generate_diagram_description(diagram_data)
+            diagram_data['description'] = description
+
+        # Create diagram entity extractor
+        extractor = DiagramEntityExtractor(schema_validator, llm_func)
+
+        # Extract entities
+        entities = await extractor.extract_entities_from_diagram(diagram_data)
+
+        # Extract relationships
+        relationships = await extractor.extract_relationships_from_diagram(
+            diagram_data, entities
+        )
+
+        return entities, relationships
+
+    def extract_entities_and_relationships_sync(self, diagram_data: Dict[str, Any], schema_validator, llm_func) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+        """
+        Synchronous wrapper for extract_entities_and_relationships.
+
+        Args:
+            diagram_data: Dictionary containing diagram information
+            schema_validator: SchemaValidator instance
+            llm_func: LLM function for entity/relationship extraction
+
+        Returns:
+            Tuple of (entities, relationships)
+        """
+        import asyncio
+
+        # Create event loop if needed
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        # Run the async method
+        return loop.run_until_complete(
+            self.extract_entities_and_relationships(diagram_data, schema_validator, llm_func)
+        )
 
 # Add the missing detect_diagrams function that's being imported by tests
 def detect_diagrams(pdf_path: str, **kwargs) -> List[Dict[str, Any]]:
