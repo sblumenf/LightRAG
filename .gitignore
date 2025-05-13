@@ -69,3 +69,4 @@ test_*
 memory-bank/
 
 **/.claude/settings.local.json
+.mcp.json
