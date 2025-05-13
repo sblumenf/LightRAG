@@ -259,7 +259,8 @@ def extract_file_metadata(file_path: str) -> Dict[str, Any]:
 
 
 def process_pdf_document(pdf_path: str, filter_content: bool = True, extract_tables: bool = True,
-                   extract_diagrams: bool = True, extract_formulas: bool = True) -> Dict[str, Any]:
+                   extract_diagrams: bool = True, extract_formulas: bool = True,
+                   context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     Process a PDF document to extract text content, metadata, and non-text elements.
 
@@ -274,6 +275,10 @@ def process_pdf_document(pdf_path: str, filter_content: bool = True, extract_tab
         extract_tables (bool, optional): Whether to extract tables from the PDF. Defaults to True.
         extract_diagrams (bool, optional): Whether to extract diagrams from the PDF. Defaults to True.
         extract_formulas (bool, optional): Whether to extract formulas from the text. Defaults to True.
+        context (Optional[Dict[str, Any]], optional): Additional context for advanced processing.
+            This can include:
+            - schema_validator: SchemaValidator instance for diagram entity extraction
+            - llm_func: Async function to call an LLM for diagram entity extraction
 
     Returns:
         Dict[str, Any]: Dictionary containing text content, metadata, and extracted elements
@@ -286,7 +291,8 @@ def process_pdf_document(pdf_path: str, filter_content: bool = True, extract_tab
     logger.info(f"Processing PDF document: {pdf_path}")
 
     result = {
-        'extracted_elements': {}
+        'extracted_elements': {},
+        'context': context or {}
     }
 
     try:
@@ -368,6 +374,68 @@ def process_pdf_document(pdf_path: str, filter_content: bool = True, extract_tab
 
                                 # For diagrams, we'll add placeholders in the filtered text later
                                 # since we don't have exact text positions to replace
+
+                        # Extract entities and relationships from diagrams if schema and LLM provided
+                        try:
+                            from .diagram_entity_extractor import DiagramEntityExtractor
+
+                            # Check if schema and LLM are available via the context
+                            schema_validator = result.get('context', {}).get('schema_validator')
+                            llm_func = result.get('context', {}).get('llm_func')
+
+                            if schema_validator and llm_func:
+                                logger.info("Extracting entities and relationships from diagrams")
+
+                                # Initialize diagram entities and relationships lists
+                                all_diagram_entities = []
+                                all_diagram_relationships = []
+
+                                # Process each diagram
+                                import asyncio
+
+                                # Create event loop
+                                try:
+                                    loop = asyncio.get_event_loop()
+                                except RuntimeError:
+                                    loop = asyncio.new_event_loop()
+                                    asyncio.set_event_loop(loop)
+
+                                # Process diagrams one by one
+                                for diagram in diagrams:
+                                    # Generate description for diagram if not already present
+                                    if not diagram.get('description'):
+                                        diagram['description'] = loop.run_until_complete(
+                                            diagram_analyzer.generate_diagram_description(diagram)
+                                        )
+
+                                    # Extract entities and relationships
+                                    entities, relationships = loop.run_until_complete(
+                                        diagram_analyzer.extract_entities_and_relationships(
+                                            diagram, schema_validator, llm_func
+                                        )
+                                    )
+
+                                    # Add to lists
+                                    all_diagram_entities.extend(entities)
+                                    all_diagram_relationships.extend(relationships)
+
+                                # Add results to extracted elements
+                                if all_diagram_entities:
+                                    result['extracted_elements']['diagram_entities'] = all_diagram_entities
+                                    pdf_metadata['diagram_entity_count'] = len(all_diagram_entities)
+                                    logger.info(f"Added {len(all_diagram_entities)} entities from diagrams")
+
+                                if all_diagram_relationships:
+                                    result['extracted_elements']['diagram_relationships'] = all_diagram_relationships
+                                    pdf_metadata['diagram_relationship_count'] = len(all_diagram_relationships)
+                                    logger.info(f"Added {len(all_diagram_relationships)} relationships from diagrams")
+                            else:
+                                logger.debug("Schema validator or LLM function not provided. Skipping diagram entity extraction.")
+                        except ImportError:
+                            logger.warning("Diagram entity extractor module not available. Diagram entities will not be extracted.")
+                        except Exception as e:
+                            logger.error(f"Error extracting entities from diagrams: {str(e)}")
+                            # Continue processing even if entity extraction fails
                 else:
                     logger.warning("PyMuPDF not available. Diagram extraction skipped.")
             except ImportError:

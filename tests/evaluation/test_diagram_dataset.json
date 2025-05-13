@@ -1,0 +1,206 @@
+{
+  "architecture_diagrams": {
+    "diagrams": [
+      {
+        "diagram_id": "test-arch-diagram-1",
+        "description": "This system architecture diagram shows a Frontend component connected to a Backend API service. The Frontend communicates with the Backend via REST API calls. The Backend connects to a Database for data storage.",
+        "caption": "System Architecture Diagram",
+        "diagram_type": "architecture_diagram",
+        "page": 1,
+        "ground_truth": {
+          "entities": [
+            {
+              "entity_name": "Frontend",
+              "entity_type": "Component",
+              "properties": {
+                "name": "Frontend UI"
+              },
+              "description": "Frontend user interface component"
+            },
+            {
+              "entity_name": "BackendAPI",
+              "entity_type": "Service",
+              "properties": {
+                "name": "Backend API",
+                "endpoint": "/api"
+              },
+              "description": "Backend API service"
+            },
+            {
+              "entity_name": "Database",
+              "entity_type": "DataStore",
+              "properties": {
+                "name": "Database",
+                "type": "SQL"
+              },
+              "description": "SQL database for storage"
+            }
+          ],
+          "relationships": [
+            {
+              "source": "Frontend",
+              "target": "BackendAPI",
+              "type": "CALLS",
+              "description": "Frontend calls Backend API using REST",
+              "properties": {
+                "protocol": "REST"
+              }
+            },
+            {
+              "source": "BackendAPI",
+              "target": "Database",
+              "type": "USES",
+              "description": "Backend API uses Database for storage",
+              "properties": {
+                "query_language": "SQL"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "diagram_id": "test-arch-diagram-2",
+        "description": "This microservice architecture shows three services: AuthService, UserService, and ContentService. The AuthService provides authentication for both UserService and ContentService. The UserService manages user data while ContentService handles content management.",
+        "caption": "Microservice Architecture",
+        "diagram_type": "architecture_diagram",
+        "page": 2,
+        "ground_truth": {
+          "entities": [
+            {
+              "entity_name": "AuthService",
+              "entity_type": "Service",
+              "properties": {
+                "name": "Auth Service",
+                "endpoint": "/auth"
+              },
+              "description": "Authentication service"
+            },
+            {
+              "entity_name": "UserService",
+              "entity_type": "Service",
+              "properties": {
+                "name": "User Service",
+                "endpoint": "/users"
+              },
+              "description": "User management service"
+            },
+            {
+              "entity_name": "ContentService",
+              "entity_type": "Service",
+              "properties": {
+                "name": "Content Service",
+                "endpoint": "/content"
+              },
+              "description": "Content management service"
+            }
+          ],
+          "relationships": [
+            {
+              "source": "UserService",
+              "target": "AuthService",
+              "type": "DEPENDS_ON",
+              "description": "UserService depends on AuthService for authentication",
+              "properties": {}
+            },
+            {
+              "source": "ContentService",
+              "target": "AuthService",
+              "type": "DEPENDS_ON",
+              "description": "ContentService depends on AuthService for authentication",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "flowcharts": {
+    "diagrams": [
+      {
+        "diagram_id": "test-flow-diagram-1",
+        "description": "This flowchart depicts a user login process. The process starts with a login request, then checks if credentials are valid. If valid, it generates a token and returns success. If invalid, it returns an error message.",
+        "caption": "User Login Process",
+        "diagram_type": "flowchart",
+        "page": 3,
+        "ground_truth": {
+          "entities": [
+            {
+              "entity_name": "LoginRequest",
+              "entity_type": "Process",
+              "properties": {
+                "name": "Login Request"
+              },
+              "description": "Process login request step"
+            },
+            {
+              "entity_name": "ValidateCredentials",
+              "entity_type": "Process",
+              "properties": {
+                "name": "Validate Credentials"
+              },
+              "description": "Validate user credentials step"
+            },
+            {
+              "entity_name": "GenerateToken",
+              "entity_type": "Process",
+              "properties": {
+                "name": "Generate Token"
+              },
+              "description": "Generate authentication token step"
+            },
+            {
+              "entity_name": "ReturnSuccess",
+              "entity_type": "Process",
+              "properties": {
+                "name": "Return Success"
+              },
+              "description": "Return success response step"
+            },
+            {
+              "entity_name": "ReturnError",
+              "entity_type": "Process",
+              "properties": {
+                "name": "Return Error"
+              },
+              "description": "Return error response step"
+            }
+          ],
+          "relationships": [
+            {
+              "source": "LoginRequest",
+              "target": "ValidateCredentials",
+              "type": "NEXT",
+              "description": "After login request, validate credentials",
+              "properties": {}
+            },
+            {
+              "source": "ValidateCredentials",
+              "target": "GenerateToken",
+              "type": "NEXT_IF",
+              "description": "If credentials are valid, generate token",
+              "properties": {
+                "condition": "valid"
+              }
+            },
+            {
+              "source": "ValidateCredentials",
+              "target": "ReturnError",
+              "type": "NEXT_IF",
+              "description": "If credentials are invalid, return error",
+              "properties": {
+                "condition": "invalid"
+              }
+            },
+            {
+              "source": "GenerateToken",
+              "target": "ReturnSuccess",
+              "type": "NEXT",
+              "description": "After generating token, return success",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

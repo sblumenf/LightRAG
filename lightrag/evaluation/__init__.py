@@ -28,6 +28,11 @@ from .response_quality import (
     ResponseQualityMetrics
 )
 
+from .diagram_entity_evaluation import (
+    evaluate_diagram_entity_extraction,
+    DiagramEntityEvaluator
+)
+
 __all__ = [
     'evaluate_kg_quality',
     'evaluate_schema_conformance',
@@ -42,5 +47,7 @@ __all__ = [
     'evaluate_reasoning_quality',
     'evaluate_citation_quality',
     'evaluate_factual_accuracy',
-    'ResponseQualityMetrics'
+    'ResponseQualityMetrics',
+    'evaluate_diagram_entity_extraction',
+    'DiagramEntityEvaluator'
 ]

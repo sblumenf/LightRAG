@@ -40,6 +40,7 @@
 
 ## 🎉 News
 
+- [X] [2025.05.20]🎯📢LightRAG now supports advanced formula interpretation capabilities for better mathematical content understanding.
 - [X] [2025.05.15]🎯📢LightRAG now includes comprehensive benchmarking and evaluation tools for measuring performance and quality.
 - [X] [2025.04.01]🎯📢LightRAG now supports diagram and formula integration, enabling better handling of non-text elements.
 - [X] [2025.03.18]🎯📢LightRAG now supports citation functionality, enabling proper source attribution.
@@ -250,6 +251,11 @@ A full list of LightRAG init parameters:
 | **embedding_cache_config** | `dict` | Configuration for question-answer caching. Contains three parameters: `enabled`: Boolean value to enable/disable cache lookup functionality. When enabled, the system will check cached responses before generating new answers. `similarity_threshold`: Float value (0-1), similarity threshold. When a new question's similarity with a cached question exceeds this threshold, the cached answer will be returned directly without calling the LLM. `use_llm_check`: Boolean value to enable/disable LLM similarity verification. When enabled, LLM will be used as a secondary check to verify the similarity between questions before returning cached answers. | Default: `{"enabled": False, "similarity_threshold": 0.95, "use_llm_check": False}` |
 | **enable_diagram_analysis** | `bool` | If `TRUE`, enables diagram extraction and analysis during document processing | `TRUE` |
 | **enable_formula_analysis** | `bool` | If `TRUE`, enables formula extraction and analysis during document processing | `TRUE` |
+| **enable_formula_interpretation** | `bool` | If `TRUE`, enables detailed formula interpretation using LLMs | `TRUE` |
+| **formula_interpretation_level** | `str` | Level of detail for formula interpretations. Options: "basic", "detailed" | `detailed` |
+| **verify_formula_interpretations** | `bool` | If `TRUE`, verifies the mathematical accuracy of formula interpretations | `TRUE` |
+| **extract_formula_explanations** | `bool` | If `TRUE`, extracts formula explanations from surrounding text in documents | `TRUE` |
+| **identify_formula_relationships** | `bool` | If `TRUE`, identifies relationships between formulas in the same context | `TRUE` |
 | **enable_diagram_formula_integration** | `bool` | If `TRUE`, enables integration of diagram and formula descriptions in LLM responses | `TRUE` |
 | **resolve_placeholders_in_context** | `bool` | If `TRUE`, resolves diagram and formula placeholders in context before passing to LLM | `TRUE` |
 
@@ -1285,6 +1291,86 @@ The LightRAG Server is designed to provide Web UI and API support.  **For more i
 The LightRAG Server offers a comprehensive knowledge graph visualization feature. It supports various gravity layouts, node queries, subgraph filtering, and more. **For more information about LightRAG Server, please refer to [LightRAG Server](./lightrag/api/README.md).**
 
 ![iShot_2025-03-23_12.40.08](./README.assets/iShot_2025-03-23_12.40.08.png)
+
+## Diagram Entity Extraction
+
+LightRAG now supports extracting structured entities and relationships directly from diagrams found in documents. This feature enhances the knowledge graph by incorporating visual information alongside text.
+
+<details>
+  <summary> <b> Usage Example </b></summary>
+
+```python
+import asyncio
+from lightrag import LightRAG, QueryParam
+from lightrag.schema.schema_validator import SchemaValidator
+from document_processing.diagram_analyzer import DiagramAnalyzer
+from document_processing.pdf_parser import process_pdf_document
+
+# Initialize schema validator with your schema
+schema_validator = SchemaValidator('path/to/schema.json')
+
+# Async function for LLM calls
+async def llm_func(prompt):
+    # Use your preferred LLM implementation
+    # For example, OpenAI:
+    from lightrag.llm.openai import gpt_4o_complete
+    return await gpt_4o_complete(prompt)
+
+# Process a PDF document with diagrams
+pdf_result = process_pdf_document(
+    pdf_path='your_document.pdf',
+    extract_diagrams=True,
+    context={
+        'schema_validator': schema_validator,
+        'llm_func': llm_func
+    }
+)
+
+# Access extracted diagram entities and relationships
+if 'diagram_entities' in pdf_result['extracted_elements']:
+    entities = pdf_result['extracted_elements']['diagram_entities']
+    print(f"Extracted {len(entities)} entities from diagrams")
+
+if 'diagram_relationships' in pdf_result['extracted_elements']:
+    relationships = pdf_result['extracted_elements']['diagram_relationships']
+    print(f"Extracted {len(relationships)} relationships from diagrams")
+
+# Add extracted entities and relationships to knowledge graph
+rag = LightRAG(...)  # Initialize LightRAG
+await rag.initialize_storages()
+
+# Insert custom KG with extracted entities and relationships
+custom_kg = {
+    "entities": entities,
+    "relationships": relationships
+}
+rag.insert_custom_kg(custom_kg)
+```
+
+**Evaluation Metrics**
+
+You can evaluate the quality of extracted entities and relationships using built-in evaluation metrics:
+
+```python
+from lightrag.evaluation.diagram_entity_evaluation import evaluate_diagram_entity_extraction
+
+# Run evaluation
+results = await evaluate_diagram_entity_extraction(
+    dataset_path='path/to/evaluation_dataset.json',
+    analyzer=DiagramAnalyzer(),
+    schema_validator=schema_validator,
+    llm_func=llm_func,
+    output_path='evaluation_results.json'
+)
+
+# View key metrics
+print(f"Entity extraction precision: {results['entity_metrics']['precision']:.2f}")
+print(f"Entity extraction recall: {results['entity_metrics']['recall']:.2f}")
+print(f"Relationship extraction F1 score: {results['relationship_metrics']['f1_score']:.2f}")
+```
+
+Diagram entity extraction works with all supported diagram types, including architectural diagrams, flowcharts, UML diagrams, and organizational charts.
+</details>
 
 ## Evaluation
 

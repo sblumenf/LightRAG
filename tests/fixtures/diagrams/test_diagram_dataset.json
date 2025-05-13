@@ -1,0 +1,274 @@
+{
+  "architecture_diagrams": {
+    "diagrams": [
+      {
+        "diagram_id": "system_architecture",
+        "diagram_type": "architecture_diagram",
+        "description": "This system architecture diagram shows a Frontend component connected to an API Gateway service. The API Gateway connects to two services: User Service and Content Service. Both services connect to a shared Database.",
+        "caption": "System Architecture Diagram",
+        "file_path": "tests/fixtures/diagrams/system_architecture.png",
+        "ground_truth": {
+          "entities": [
+            {
+              "entity_name": "Frontend",
+              "entity_type": "Component",
+              "properties": {
+                "name": "Frontend"
+              },
+              "description": "Frontend user interface component"
+            },
+            {
+              "entity_name": "APIGateway",
+              "entity_type": "Service",
+              "properties": {
+                "name": "API Gateway"
+              },
+              "description": "API Gateway service that routes requests"
+            },
+            {
+              "entity_name": "UserService",
+              "entity_type": "Service",
+              "properties": {
+                "name": "User Service"
+              },
+              "description": "Service for user management"
+            },
+            {
+              "entity_name": "ContentService",
+              "entity_type": "Service",
+              "properties": {
+                "name": "Content Service"
+              },
+              "description": "Service for content management"
+            },
+            {
+              "entity_name": "Database",
+              "entity_type": "DataStore",
+              "properties": {
+                "name": "Database"
+              },
+              "description": "Database for data storage"
+            }
+          ],
+          "relationships": [
+            {
+              "source": "Frontend",
+              "target": "APIGateway",
+              "type": "CALLS",
+              "description": "Frontend communicates with API Gateway",
+              "properties": {
+                "protocol": "HTTP"
+              }
+            },
+            {
+              "source": "APIGateway",
+              "target": "UserService",
+              "type": "CALLS",
+              "description": "API Gateway routes requests to User Service",
+              "properties": {
+                "protocol": "REST"
+              }
+            },
+            {
+              "source": "APIGateway",
+              "target": "ContentService",
+              "type": "CALLS",
+              "description": "API Gateway routes requests to Content Service",
+              "properties": {
+                "protocol": "REST"
+              }
+            },
+            {
+              "source": "UserService",
+              "target": "Database",
+              "type": "USES",
+              "description": "User Service reads from and writes to Database",
+              "properties": {
+                "protocol": "SQL"
+              }
+            },
+            {
+              "source": "ContentService",
+              "target": "Database",
+              "type": "USES",
+              "description": "Content Service reads from and writes to Database",
+              "properties": {
+                "protocol": "SQL"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "flowcharts": {
+    "diagrams": [
+      {
+        "diagram_id": "user_login_flowchart",
+        "diagram_type": "flowchart",
+        "description": "This flowchart depicts a user login process. The process starts with a user login request, then checks if the credentials are valid. If valid, it generates a token and returns success. If invalid, it returns an error message.",
+        "caption": "User Login Process",
+        "file_path": "tests/fixtures/diagrams/user_login_flowchart.png",
+        "ground_truth": {
+          "entities": [
+            {
+              "entity_name": "UserLoginRequest",
+              "entity_type": "Process",
+              "properties": {
+                "name": "User Login Request"
+              },
+              "description": "Process login request step"
+            },
+            {
+              "entity_name": "ValidCredentialsCheck",
+              "entity_type": "Decision",
+              "properties": {
+                "name": "Valid Credentials?",
+                "condition": "credentials are valid"
+              },
+              "description": "Decision point to check if credentials are valid"
+            },
+            {
+              "entity_name": "GenerateToken",
+              "entity_type": "Process",
+              "properties": {
+                "name": "Generate Token"
+              },
+              "description": "Generate authentication token step"
+            },
+            {
+              "entity_name": "ReturnError",
+              "entity_type": "Process",
+              "properties": {
+                "name": "Return Error"
+              },
+              "description": "Return error response step"
+            },
+            {
+              "entity_name": "ReturnSuccess",
+              "entity_type": "Process",
+              "properties": {
+                "name": "Return Success"
+              },
+              "description": "Return success response step"
+            }
+          ],
+          "relationships": [
+            {
+              "source": "UserLoginRequest",
+              "target": "ValidCredentialsCheck",
+              "type": "NEXT",
+              "description": "After login request, validate credentials",
+              "properties": {}
+            },
+            {
+              "source": "ValidCredentialsCheck",
+              "target": "GenerateToken",
+              "type": "NEXT_IF",
+              "description": "If credentials are valid, generate token",
+              "properties": {
+                "condition": "Yes"
+              }
+            },
+            {
+              "source": "ValidCredentialsCheck",
+              "target": "ReturnError",
+              "type": "NEXT_IF",
+              "description": "If credentials are invalid, return error",
+              "properties": {
+                "condition": "No"
+              }
+            },
+            {
+              "source": "GenerateToken",
+              "target": "ReturnSuccess",
+              "type": "NEXT",
+              "description": "After generating token, return success",
+              "properties": {}
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "uml_diagrams": {
+    "diagrams": [
+      {
+        "diagram_id": "user_management_uml",
+        "diagram_type": "uml_diagram",
+        "description": "This UML class diagram shows the user management system. The base User class has attributes like id, username, email, and password, with methods for login, logout, and updating profiles. Customer and Admin classes inherit from User. Customer has additional attributes like customerNumber and loyaltyPoints, with a method to place orders. Admin has attributes like accessLevel and department, with a method to manage users. There's also an Order class with attributes and methods related to orders.",
+        "caption": "User Management UML",
+        "file_path": "tests/fixtures/diagrams/user_management_uml.png",
+        "ground_truth": {
+          "entities": [
+            {
+              "entity_name": "User",
+              "entity_type": "Class",
+              "properties": {
+                "name": "User",
+                "attributes": "id, username, email, password",
+                "methods": "login(), logout(), updateProfile()"
+              },
+              "description": "User class representing system users"
+            },
+            {
+              "entity_name": "Customer",
+              "entity_type": "Class",
+              "properties": {
+                "name": "Customer",
+                "attributes": "customerNumber, loyaltyPoints",
+                "methods": "placeOrder()"
+              },
+              "description": "Customer class representing system customers"
+            },
+            {
+              "entity_name": "Admin",
+              "entity_type": "Class",
+              "properties": {
+                "name": "Admin",
+                "attributes": "accessLevel, department",
+                "methods": "manageUsers()"
+              },
+              "description": "Admin class representing system administrators"
+            },
+            {
+              "entity_name": "Order",
+              "entity_type": "Class",
+              "properties": {
+                "name": "Order",
+                "attributes": "orderNumber, date, totalAmount",
+                "methods": "addItem(), removeItem(), calculateTotal()"
+              },
+              "description": "Order class representing customer orders"
+            }
+          ],
+          "relationships": [
+            {
+              "source": "Customer",
+              "target": "User",
+              "type": "INHERITS_FROM",
+              "description": "Customer inherits from User",
+              "properties": {}
+            },
+            {
+              "source": "Admin",
+              "target": "User",
+              "type": "INHERITS_FROM",
+              "description": "Admin inherits from User",
+              "properties": {}
+            },
+            {
+              "source": "User",
+              "target": "Order",
+              "type": "ASSOCIATION",
+              "description": "User places Orders",
+              "properties": {
+                "label": "places"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
