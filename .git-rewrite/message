@@ -1,0 +1,4 @@
+Fix qdrant payload id
+
+Qdrant now is using PointStruct.payload["id"], not PointStruct.id UUID.
+This will fix id overwrite
