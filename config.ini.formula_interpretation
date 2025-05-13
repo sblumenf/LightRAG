@@ -1,0 +1,21 @@
+[DEFAULT]
+# Formula Interpretation Configuration Example
+
+# Base Formula Analysis Settings
+ENABLE_FORMULA_ANALYSIS=True
+ENABLE_FORMULA_INTERPRETATION=True
+
+# Formula Interpretation Level
+# Options: "basic" or "detailed"
+FORMULA_INTERPRETATION_LEVEL=detailed
+
+# Formula Interpretation Features
+VERIFY_FORMULA_INTERPRETATIONS=True
+EXTRACT_FORMULA_EXPLANATIONS=True
+IDENTIFY_FORMULA_RELATIONSHIPS=True
+
+# Integration Settings
+ENABLE_DIAGRAM_FORMULA_INTEGRATION=True
+RESOLVE_PLACEHOLDERS_IN_CONTEXT=True
+FORMULA_CITATION_FORMAT=[Formula: {id}]
+PLACEHOLDER_OUTPUT_FORMAT=detailed

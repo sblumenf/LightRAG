@@ -10,7 +10,10 @@ import logging.config
 import uvicorn
 import pipmaster as pm
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
+from prometheus_client import CONTENT_TYPE_LATEST
+
+from .monitoring import MetricsMiddleware, get_metrics
 from pathlib import Path
 import configparser
 from ascii_colors import ASCIIColors
@@ -40,7 +43,6 @@ from lightrag.api.routers.document_routes import (
 )
 from lightrag.api.routers.query_routes import create_query_routes
 from lightrag.api.routers.graph_routes import create_graph_routes
-from lightrag.api.routers.ollama_api import OllamaAPI
 
 from lightrag.utils import logger, set_verbose_debug
 from lightrag.kg.shared_storage import (
@@ -76,14 +78,12 @@ def create_app(args):
     # Verify that bindings are correctly setup
     if args.llm_binding not in [
         "lollms",
-        "ollama",
         "openai",
-        "openai-ollama",
         "azure_openai",
     ]:
         raise Exception("llm binding not supported")
 
-    if args.embedding_binding not in ["lollms", "ollama", "openai", "azure_openai"]:
+    if args.embedding_binding not in ["lollms", "openai", "azure_openai"]:
         raise Exception("embedding binding not supported")
 
     # Set default hosts if not provided
@@ -150,7 +150,7 @@ def create_app(args):
     # Initialize FastAPI
     app_kwargs = {
         "title": "LightRAG Server API",
-        "description": "Providing API for LightRAG core, Web UI and Ollama Model Emulation"
+        "description": "Providing API for LightRAG core and Web UI"
         + "(With authentication)"
         if api_key
         else "",
@@ -179,6 +179,9 @@ def create_app(args):
             return ["*"]
         return [origin.strip() for origin in origins_str.split(",")]
 
+    # Add metrics middleware before CORS middleware
+    app.add_middleware(MetricsMiddleware)
+    
     # Add CORS middleware
     app.add_middleware(
         CORSMiddleware,
@@ -195,8 +198,6 @@ def create_app(args):
     Path(args.working_dir).mkdir(parents=True, exist_ok=True)
     if args.llm_binding == "lollms" or args.embedding_binding == "lollms":
         from lightrag.llm.lollms import lollms_model_complete, lollms_embed
-    if args.llm_binding == "ollama" or args.embedding_binding == "ollama":
-        from lightrag.llm.ollama import ollama_model_complete, ollama_embed
     if args.llm_binding == "openai" or args.embedding_binding == "openai":
         from lightrag.llm.openai import openai_complete_if_cache, openai_embed
     if args.llm_binding == "azure_openai" or args.embedding_binding == "azure_openai":
@@ -204,9 +205,6 @@ def create_app(args):
             azure_openai_complete_if_cache,
             azure_openai_embed,
         )
-    if args.llm_binding_host == "openai-ollama" or args.embedding_binding == "ollama":
-        from lightrag.llm.openai import openai_complete_if_cache
-        from lightrag.llm.ollama import ollama_embed
 
     async def openai_alike_model_complete(
         prompt,
@@ -292,13 +290,6 @@ def create_app(args):
                     api_key=args.embedding_binding_api_key,
                 )
                 if args.embedding_binding == "lollms"
-                else ollama_embed(
-                    texts,
-                    embed_model=args.embedding_model,
-                    host=args.embedding_binding_host,
-                    api_key=args.embedding_binding_api_key,
-                )
-                if args.embedding_binding == "ollama"
                 else azure_openai_embed(
                     texts,
                     model=args.embedding_model,  # no host is used for openai,
@@ -324,13 +315,6 @@ def create_app(args):
                 api_key=args.embedding_binding_api_key,
             )
             if args.embedding_binding == "lollms"
-            else ollama_embed(
-                texts,
-                embed_model=args.embedding_model,
-                host=args.embedding_binding_host,
-                api_key=args.embedding_binding_api_key,
-            )
-            if args.embedding_binding == "ollama"
             else azure_openai_embed(
                 texts,
                 model=args.embedding_model,  # no host is used for openai,
@@ -413,14 +397,19 @@ def create_app(args):
     app.include_router(create_query_routes(rag, api_key, args.top_k))
     app.include_router(create_graph_routes(rag, api_key))
 
-    # Add Ollama API routes
-    ollama_api = OllamaAPI(rag, top_k=args.top_k, api_key=api_key)
-    app.include_router(ollama_api.router, prefix="/api")
-
     @app.get("/")
     async def redirect_to_webui():
         """Redirect root path to /webui"""
         return RedirectResponse(url="/webui")
+        
+    @app.get("/metrics", dependencies=[Depends(combined_auth)])
+    async def metrics():
+        """Prometheus metrics endpoint"""
+        metrics_data = await get_metrics()
+        return Response(
+            content=metrics_data,
+            media_type=CONTENT_TYPE_LATEST
+        )
 
     @app.get("/auth-status")
     async def get_auth_status():

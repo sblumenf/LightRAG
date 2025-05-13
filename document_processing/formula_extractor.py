@@ -2,7 +2,9 @@
 Formula extraction module for LightRAG.
 
 This module provides functionality to extract and analyze mathematical formulas
-from text content using regular expressions and heuristic analysis.
+from text content using regular expressions and heuristic analysis. It also supports
+extraction of formula explanations from surrounding text and identification of
+relationships between formulas.
 """
 import re
 import logging
@@ -18,20 +20,38 @@ try:
 except ImportError:
     logging.warning("PIL not available. Formula image generation will be disabled.")
 
+# Import formula interpreter if available
+try:
+    from .formula_interpreter import FormulaInterpreter
+except ImportError:
+    logging.warning("FormulaInterpreter not available. Advanced formula interpretation will be disabled.")
+
 logger = logging.getLogger(__name__)
 
 class FormulaExtractor:
     """
     Extract and process mathematical formulas from documents.
+
+    This class provides functionality to extract mathematical formulas from text,
+    analyze their structure, and generate descriptions. It can also extract
+    formula explanations from surrounding text and identify relationships between formulas.
     """
     def __init__(self, llm_service=None):
         """
         Initialize the formula extractor.
 
         Args:
-            llm_service: Optional LLM service for formula description
+            llm_service: Optional LLM service for formula description and interpretation
         """
         self.llm_service = llm_service
+
+        # Initialize FormulaInterpreter if LLM service is provided
+        self.formula_interpreter = None
+        if self.llm_service:
+            try:
+                self.formula_interpreter = FormulaInterpreter(llm_service)
+            except NameError:
+                logger.warning("FormulaInterpreter class not available. Using basic formula description.")
 
         # Common mathematical symbols
         self.math_symbols = set([
@@ -41,6 +61,14 @@ class FormulaExtractor:
             '⊕', '⊗', 'π', 'θ', 'α', 'β', 'γ', 'δ', 'ε', 'λ', 'μ',
             'σ', 'τ', 'φ', 'ω', '^'
         ])
+
+        # Explanation extraction patterns
+        self.explanation_patterns = [
+            r'(?:where|in which|with|here)\s+([A-Za-z][A-Za-z0-9_]*)\s+(?:is|represents|denotes|means|refers to)\s+([^.;]+)[.;]?',
+            r'([A-Za-z][A-Za-z0-9_]*)\s+(?:is|represents|denotes|means|refers to)\s+([^.;]+)[.;]?',
+            r'the\s+(?:equation|formula|expression)\s+([^.;]+)[.;]?\s+(?:means|represents|describes|shows|indicates|tells us)\s+that\s+([^.;]+)[.;]?',
+            r'(?:this|the)\s+(?:equation|formula|expression)\s+(?:means|represents|describes|shows|indicates|tells us)\s+that\s+([^.;]+)[.;]?'
+        ]
 
     def extract_formulas(self, text: str) -> List[Dict[str, Any]]:
         """
@@ -104,6 +132,14 @@ class FormulaExtractor:
                     # Convert formula to textual representation
                     textual_repr = self._formula_to_text(formula_text)
 
+                    # Extract explanation if possible
+                    explanation = self.extract_formula_explanation(text, {
+                        'formula': formula_text,
+                        'context_before': context_before,
+                        'context_after': context_after,
+                        'position': match_span
+                    })
+
                     # Add formula to results
                     formulas.append({
                         'formula_id': formula_id,
@@ -112,7 +148,8 @@ class FormulaExtractor:
                         'context_after': context_after,
                         'position': match_span,
                         'textual_representation': textual_repr,
-                        'latex': self._extract_latex(formula_text)
+                        'latex': self._extract_latex(formula_text),
+                        'explanation': explanation
                     })
 
                     # Mark this span as processed
@@ -500,17 +537,161 @@ class FormulaExtractor:
 
         return description.strip() + "."
 
+    def extract_formula_explanation(self, text: str, formula_data: Dict[str, Any]) -> Optional[str]:
+        """
+        Extract explanation for a formula from the surrounding text.
+
+        Args:
+            text: The document text containing the formula
+            formula_data: Dictionary with formula metadata
+
+        Returns:
+            Optional[str]: Extracted explanation or None if not found
+        """
+        formula = formula_data.get('formula', '')
+        position = formula_data.get('position', (0, 0))
+        context_before = formula_data.get('context_before', '')
+        context_after = formula_data.get('context_after', '')
+
+        # Combine contexts for analysis
+        combined_context = context_before + " " + formula + " " + context_after
+
+        # Try to find explicit explanation patterns
+        explanation = self._extract_explanation_from_patterns(combined_context, formula)
+
+        if explanation:
+            return explanation
+
+        # Look for explanation sentences in the context after the formula
+        sentence_explanation = self._extract_explanation_from_sentences(context_after)
+
+        if sentence_explanation:
+            return sentence_explanation
+
+        # If no explanation found in text, return None
+        return None
+
+    def _extract_explanation_from_patterns(self, text: str, formula: str) -> Optional[str]:
+        """
+        Extract formula explanation using regex patterns.
+
+        Args:
+            text: Text content to search in
+            formula: The formula to find explanation for
+
+        Returns:
+            Optional[str]: Extracted explanation or None if not found
+        """
+        # Try each pattern
+        for pattern in self.explanation_patterns:
+            matches = re.finditer(pattern, text)
+            for match in matches:
+                # Depending on pattern, we might have different groups
+                if len(match.groups()) >= 2:
+                    # Pattern with variable definitions
+                    var_or_formula = match.group(1).strip()
+                    explanation = match.group(2).strip()
+
+                    # Check if this is relevant to our formula
+                    if var_or_formula in formula or var_or_formula == formula:
+                        return explanation
+                elif len(match.groups()) >= 1:
+                    # Pattern with direct explanation
+                    return match.group(1).strip()
+
+        return None
+
+    def _extract_explanation_from_sentences(self, text: str) -> Optional[str]:
+        """
+        Extract explanation from sentences following the formula.
+
+        Args:
+            text: Text following the formula
+
+        Returns:
+            Optional[str]: First sentence or None if not suitable
+        """
+        # Split into sentences
+        sentences = re.split(r'[.!?]\s+', text)
+
+        if not sentences:
+            return None
+
+        # Check if first sentence looks like an explanation
+        first_sentence = sentences[0].strip()
+
+        # Filter out sentences that don't look like explanations
+        if len(first_sentence) < 15:  # Too short
+            return None
+
+        # Check for explanation indicators
+        explanation_indicators = [
+            'means', 'represents', 'describes', 'shows', 'indicates',
+            'tells us', 'defines', 'expresses', 'states', 'explains'
+        ]
+
+        if any(indicator in first_sentence.lower() for indicator in explanation_indicators):
+            return first_sentence
+
+        # If first sentence starts with "This" or "The", it's likely an explanation
+        if first_sentence.lower().startswith(('this', 'the', 'it', 'thus')):
+            return first_sentence
+
+        return None
+
+    async def identify_formula_relationships(self, formulas: List[Dict[str, Any]], document_text: str = "") -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Identify relationships between formulas.
+
+        Args:
+            formulas: List of extracted formulas
+            document_text: The document text containing the formulas
+
+        Returns:
+            dict: Dictionary mapping formula IDs to related formula data
+        """
+        # If no formula interpreter or less than 2 formulas, return empty dict
+        if not self.formula_interpreter or len(formulas) < 2:
+            return {}
+
+        # Use the formula interpreter to identify relationships
+        return await self.formula_interpreter.identify_formula_relationships(formulas, document_text)
+
+    async def interpret_formula(self, formula_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Generate an interpretation for a formula using the formula interpreter.
+
+        Args:
+            formula_data: Dictionary with formula metadata
+
+        Returns:
+            dict: Formula interpretation data
+        """
+        # If no formula interpreter, use basic description
+        if not self.formula_interpreter:
+            description = self.generate_formula_description(formula_data)
+            return {
+                "explanation": description,
+                "components": [],
+                "verified": False
+            }
+
+        # Use the formula interpreter for advanced interpretation
+        existing_explanation = formula_data.get('explanation')
+        return await self.formula_interpreter.interpret_formula(formula_data, existing_explanation=existing_explanation)
+
+
 # Wrapper function for FormulaExtractor.extract_formulas
 def extract_formulas(text: str, **kwargs) -> List[Dict[str, Any]]:
     """
     Extract formulas from text content.
-    
+
     This is a wrapper around FormulaExtractor.extract_formulas for backward compatibility.
-    
+
     Args:
         text: Text content to analyze
         **kwargs: Additional arguments for formula extraction
-        
+
     Returns:
         List[Dict[str, Any]]: List of extracted formulas with metadata
     """

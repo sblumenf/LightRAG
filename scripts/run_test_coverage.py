@@ -9,6 +9,7 @@ import sys
 import subprocess
 import argparse
 from datetime import datetime
+import shutil
 
 # Add project root to Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
@@ -26,6 +27,8 @@ def setup_parser():
                       help='Generate XML coverage report')
     parser.add_argument('--include', type=str, default='lightrag/*',
                       help='Files to include in coverage (comma-separated glob patterns)')
+    parser.add_argument('--python', type=str, default='python3',
+                      help='Python executable to use')
     return parser
 
 def run_coverage(args):
@@ -36,9 +39,15 @@ def run_coverage(args):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     report_prefix = f"{args.output}/coverage_{timestamp}"
     
+    # Verify python executable exists
+    python_exec = args.python
+    if not shutil.which(python_exec):
+        print(f"ERROR: Python executable '{python_exec}' not found")
+        return 1
+    
     # Build coverage command
     cmd = [
-        'python', '-m', 'pytest',
+        python_exec, '-m', 'pytest',
         '--cov=lightrag',
         f'--cov-report=term-missing',
     ]
@@ -63,39 +72,43 @@ def run_coverage(args):
     ])
     
     print(f"Running command: {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    
-    # Print output
-    print(result.stdout)
-    
-    if result.stderr:
-        print("ERRORS:", file=sys.stderr)
-        print(result.stderr, file=sys.stderr)
-    
-    # Extract coverage percentage
-    coverage_line = None
-    for line in result.stdout.splitlines():
-        if "TOTAL" in line and "%" in line:
-            coverage_line = line
-            break
-    
-    if coverage_line:
-        try:
-            # Extract the coverage percentage
-            total_coverage = int(coverage_line.split('%')[0].split()[-1])
-            print(f"Total coverage: {total_coverage}%")
-            
-            if total_coverage < args.threshold:
-                print(f"ERROR: Coverage {total_coverage}% is below the required threshold of {args.threshold}%")
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        
+        # Print output
+        print(result.stdout)
+        
+        if result.stderr:
+            print("ERRORS:", file=sys.stderr)
+            print(result.stderr, file=sys.stderr)
+        
+        # Extract coverage percentage
+        coverage_line = None
+        for line in result.stdout.splitlines():
+            if "TOTAL" in line and "%" in line:
+                coverage_line = line
+                break
+        
+        if coverage_line:
+            try:
+                # Extract the coverage percentage
+                total_coverage = int(coverage_line.split('%')[0].split()[-1])
+                print(f"Total coverage: {total_coverage}%")
+                
+                if total_coverage < args.threshold:
+                    print(f"ERROR: Coverage {total_coverage}% is below the required threshold of {args.threshold}%")
+                    return 1
+                else:
+                    print(f"SUCCESS: Coverage {total_coverage}% meets the required threshold of {args.threshold}%")
+                    return 0
+            except (IndexError, ValueError):
+                print("Could not parse coverage percentage")
                 return 1
-            else:
-                print(f"SUCCESS: Coverage {total_coverage}% meets the required threshold of {args.threshold}%")
-                return 0
-        except (IndexError, ValueError):
-            print("Could not parse coverage percentage")
+        else:
+            print("Could not find coverage total in output")
             return 1
-    else:
-        print("Could not find coverage total in output")
+    except Exception as e:
+        print(f"ERROR: Failed to run coverage: {str(e)}")
         return 1
 
 def main():

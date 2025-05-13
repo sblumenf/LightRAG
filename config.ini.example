@@ -1,3 +1,28 @@
+[lightrag]
+# API security settings - CHANGE THESE IN PRODUCTION
+LIGHTRAG_API_KEY=your-strong-api-key-here  # Required for API authentication
+ENABLE_SSL=true                            # Set to true to enable HTTPS
+SSL_CERT_PATH=/path/to/cert.pem           # SSL certificate path
+SSL_KEY_PATH=/path/to/key.pem             # SSL key path
+LOG_LEVEL=INFO                            # Log level (DEBUG, INFO, WARNING, ERROR)
+LOG_FILE=/var/log/lightrag/app.log        # Log file path
+
+# Rate limiting settings
+RATE_LIMIT_REQUESTS=60                    # Max requests per window
+RATE_LIMIT_WINDOW=60                      # Window size in seconds
+
+# Processing settings
+PROCESSING_THREADS=8                      # Number of processing threads
+MAX_EMBED_CHUNK_SIZE=512                  # Max tokens per chunk for embedding
+MAX_EMBED_TOKENS=8000                     # Max tokens to embed per document
+MAX_ASYNC=20                              # Max concurrent async operations
+
+# Caching settings
+ENABLE_QUERY_CACHE=true                   # Enable query result caching
+QUERY_CACHE_TTL=3600                      # Query cache TTL in seconds
+ENABLE_EMBEDDING_CACHE=true               # Enable embedding caching
+EMBEDDING_CACHE_SIZE=10000                # Max number of embeddings to cache
+
 [neo4j]
 uri = neo4j+s://xxxxxxxx.databases.neo4j.io
 username = neo4j
@@ -19,4 +44,16 @@ port = 5432
 user = your_username
 password = your_password
 database = your_database
-workspace = default  # 可选,默认为default
+workspace = default  # Optional, default is "default"
+
+[milvus]
+host = localhost
+port = 19530
+collection = lightrag_embeddings
+
+[tidb]
+host = localhost
+port = 4000
+user = root
+password = 
+database = lightrag

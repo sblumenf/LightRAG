@@ -113,6 +113,11 @@ class QueryParam:
     """If True, reranks retrieval results based on query analysis.
     Only applies when intelligent retrieval is enabled.
     """
+    
+    cosine_threshold: float = 0.2
+    """Cosine similarity threshold for vector search.
+    Lower values return more but less relevant results.
+    """
 
 
 @dataclass

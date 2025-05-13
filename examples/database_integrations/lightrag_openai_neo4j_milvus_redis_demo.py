@@ -1,11 +1,8 @@
 import os
-from lightrag import LightRAG, QueryParam
-from lightrag.llm.ollama import ollama_model_complete, ollama_embed
-from lightrag.utils import EmbeddingFunc
 import asyncio
-import nest_asyncio
-
-nest_asyncio.apply()
+from lightrag import LightRAG, QueryParam
+from lightrag.llm.ollama import ollama_embed, openai_complete_if_cache
+from lightrag.utils import EmbeddingFunc
 from lightrag.kg.shared_storage import initialize_pipeline_status
 
 # WorkingDir
@@ -15,45 +12,58 @@ if not os.path.exists(WORKING_DIR):
     os.mkdir(WORKING_DIR)
 print(f"WorkingDir: {WORKING_DIR}")
 
-# mongo
-os.environ["MONGO_URI"] = "mongodb://root:root@localhost:27017/"
-os.environ["MONGO_DATABASE"] = "LightRAG"
+# redis
+os.environ["REDIS_URI"] = "redis://localhost:6379"
 
 # neo4j
 BATCH_SIZE_NODES = 500
 BATCH_SIZE_EDGES = 100
-os.environ["NEO4J_URI"] = "bolt://localhost:7687"
+os.environ["NEO4J_URI"] = "bolt://117.50.173.35:7687"
 os.environ["NEO4J_USERNAME"] = "neo4j"
-os.environ["NEO4J_PASSWORD"] = "neo4j"
+os.environ["NEO4J_PASSWORD"] = "12345678"
 
 # milvus
-os.environ["MILVUS_URI"] = "http://localhost:19530"
+os.environ["MILVUS_URI"] = "http://117.50.173.35:19530"
 os.environ["MILVUS_USER"] = "root"
-os.environ["MILVUS_PASSWORD"] = "root"
+os.environ["MILVUS_PASSWORD"] = "Milvus"
 os.environ["MILVUS_DB_NAME"] = "lightrag"
+
+
+async def llm_model_func(
+    prompt, system_prompt=None, history_messages=[], keyword_extraction=False, **kwargs
+) -> str:
+    return await openai_complete_if_cache(
+        "deepseek-chat",
+        prompt,
+        system_prompt=system_prompt,
+        history_messages=history_messages,
+        api_key="",
+        base_url="",
+        **kwargs,
+    )
+
+
+embedding_func = EmbeddingFunc(
+    embedding_dim=768,
+    max_token_size=512,
+    func=lambda texts: ollama_embed(
+        texts, embed_model="shaw/dmeta-embedding-zh", host="http://117.50.173.35:11434"
+    ),
+)
 
 
 async def initialize_rag():
     rag = LightRAG(
         working_dir=WORKING_DIR,
-        llm_model_func=ollama_model_complete,
-        llm_model_name="qwen2.5:14b",
-        llm_model_max_async=4,
+        llm_model_func=llm_model_func,
         llm_model_max_token_size=32768,
-        llm_model_kwargs={
-            "host": "http://127.0.0.1:11434",
-            "options": {"num_ctx": 32768},
-        },
-        embedding_func=EmbeddingFunc(
-            embedding_dim=1024,
-            max_token_size=8192,
-            func=lambda texts: ollama_embed(
-                texts=texts, embed_model="bge-m3:latest", host="http://127.0.0.1:11434"
-            ),
-        ),
-        kv_storage="MongoKVStorage",
+        embedding_func=embedding_func,
+        chunk_token_size=512,
+        chunk_overlap_token_size=256,
+        kv_storage="RedisKVStorage",
         graph_storage="Neo4JStorage",
         vector_storage="MilvusVectorDBStorage",
+        doc_status_storage="RedisKVStorage",
     )
 
     await rag.initialize_storages()
@@ -66,33 +76,31 @@ def main():
     # Initialize RAG instance
     rag = asyncio.run(initialize_rag())
 
-    # Insert example text
     with open("./book.txt", "r", encoding="utf-8") as f:
         rag.insert(f.read())
 
-    # Test different query modes
-    print("\nNaive Search:")
+    # Perform naive search
     print(
         rag.query(
             "What are the top themes in this story?", param=QueryParam(mode="naive")
         )
     )
 
-    print("\nLocal Search:")
+    # Perform local search
     print(
         rag.query(
             "What are the top themes in this story?", param=QueryParam(mode="local")
         )
     )
 
-    print("\nGlobal Search:")
+    # Perform global search
     print(
         rag.query(
             "What are the top themes in this story?", param=QueryParam(mode="global")
         )
     )
 
-    print("\nHybrid Search:")
+    # Perform hybrid search
     print(
         rag.query(
             "What are the top themes in this story?", param=QueryParam(mode="hybrid")

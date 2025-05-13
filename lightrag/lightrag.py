@@ -3,6 +3,7 @@ from __future__ import annotations
 import traceback
 import asyncio
 import configparser
+import inspect
 import os
 import warnings
 from dataclasses import asdict, dataclass, field
@@ -598,9 +599,13 @@ class LightRAG:
                 self.doc_status,
             ):
                 if storage:
-                    tasks.append(storage.initialize())
+                    # Skip non-awaitable initialize methods
+                    initialize_result = storage.initialize()
+                    if inspect.isawaitable(initialize_result):
+                        tasks.append(initialize_result)
 
-            await asyncio.gather(*tasks)
+            if tasks:
+                await asyncio.gather(*tasks)
 
             self._storages_status = StoragesStatus.INITIALIZED
             logger.debug("Initialized Storages")
@@ -621,9 +626,13 @@ class LightRAG:
                 self.doc_status,
             ):
                 if storage:
-                    tasks.append(storage.finalize())
+                    # Skip non-awaitable finalize methods
+                    finalize_result = storage.finalize()
+                    if inspect.isawaitable(finalize_result):
+                        tasks.append(finalize_result)
 
-            await asyncio.gather(*tasks)
+            if tasks:
+                await asyncio.gather(*tasks)
 
             self._storages_status = StoragesStatus.FINALIZED
             logger.debug("Finalized Storages")
@@ -1809,7 +1818,14 @@ class LightRAG:
         # Format results as context items
         context_items = []
 
-        for chunk_id, chunk_data in vector_results.items():
+        # Handle both dictionary and list results
+        if isinstance(vector_results, dict):
+            vector_items = vector_results.items()
+        else:
+            # Assume it's a list of dictionaries with "id" keys
+            vector_items = [(item.get("id", f"chunk_{i}"), item) for i, item in enumerate(vector_results)]
+
+        for chunk_id, chunk_data in vector_items:
             # Get full chunk data from text chunks
             full_chunk = await self.text_chunks.get_by_id(chunk_id)
 

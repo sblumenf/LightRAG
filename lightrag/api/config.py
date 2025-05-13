@@ -5,25 +5,42 @@ Configs for the LightRAG API.
 import os
 import argparse
 import logging
+import sys
+from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
+
+# Configure logging with both file and console output
+LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+# Create logs directory if it doesn't exist
+log_dir = Path("logs")
+log_dir.mkdir(exist_ok=True)
+
+# Create a timestamped log file
+log_file = log_dir / f"lightrag_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+
+# Root logger configuration
+logging.basicConfig(
+    level=logging.INFO,
+    format=LOG_FORMAT,
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
+# Create logger for this module
+logger = logging.getLogger(__name__)
 
 # use the .env that is inside the current folder
 # allows to use different .env file for each lightrag instance
 # the OS environment variables take precedence over the .env file
 load_dotenv(dotenv_path=".env", override=False)
+logger.info("Configuration loading started")
 
 
-class OllamaServerInfos:
-    # Constants for emulated Ollama model information
-    LIGHTRAG_NAME = "lightrag"
-    LIGHTRAG_TAG = os.getenv("OLLAMA_EMULATING_MODEL_TAG", "latest")
-    LIGHTRAG_MODEL = f"{LIGHTRAG_NAME}:{LIGHTRAG_TAG}"
-    LIGHTRAG_SIZE = 7365960935  # it's a dummy value
-    LIGHTRAG_CREATED_AT = "2024-01-15T00:00:00Z"
-    LIGHTRAG_DIGEST = "sha256:lightrag"
-
-
-ollama_server_infos = OllamaServerInfos()
+# Model server information removed
 
 
 class DefaultRAGStorageConfig:
@@ -35,14 +52,13 @@ class DefaultRAGStorageConfig:
 
 def get_default_host(binding_type: str) -> str:
     default_hosts = {
-        "ollama": os.getenv("LLM_BINDING_HOST", "http://localhost:11434"),
         "lollms": os.getenv("LLM_BINDING_HOST", "http://localhost:9600"),
         "azure_openai": os.getenv("AZURE_OPENAI_ENDPOINT", "https://api.openai.com/v1"),
         "openai": os.getenv("LLM_BINDING_HOST", "https://api.openai.com/v1"),
     }
     return default_hosts.get(
-        binding_type, os.getenv("LLM_BINDING_HOST", "http://localhost:11434")
-    )  # fallback to ollama if unknown
+        binding_type, os.getenv("LLM_BINDING_HOST", "https://api.openai.com/v1")
+    )  # fallback to OpenAI if unknown
 
 
 def get_env_value(env_key: str, default: any, value_type: type = str) -> any:
@@ -157,6 +173,24 @@ def parse_args() -> argparse.Namespace:
         default=get_env_value("LIGHTRAG_API_KEY", None),
         help="API key for authentication. This protects lightrag server against unauthorized access",
     )
+    parser.add_argument(
+        "--rate-limit-requests",
+        type=int,
+        default=get_env_value("RATE_LIMIT_REQUESTS", 60, int),
+        help="Maximum number of requests allowed per rate limit window",
+    )
+    parser.add_argument(
+        "--rate-limit-window", 
+        type=int,
+        default=get_env_value("RATE_LIMIT_WINDOW", 60, int),
+        help="Rate limit window in seconds",
+    )
+    parser.add_argument(
+        "--trusted-networks",
+        type=str,
+        default=get_env_value("TRUSTED_NETWORKS", ""),
+        help="Comma-separated list of trusted IP networks in CIDR notation (e.g., '10.0.0.0/8,192.168.1.0/24')",
+    )
 
     # Optional https parameters
     parser.add_argument(
@@ -197,14 +231,14 @@ def parse_args() -> argparse.Namespace:
         help="Cosine similarity threshold (default: from env or 0.4)",
     )
 
-    # Ollama model name
+    # Model name for simulation
     parser.add_argument(
         "--simulated-model-name",
         type=str,
         default=get_env_value(
-            "SIMULATED_MODEL_NAME", ollama_server_infos.LIGHTRAG_MODEL
+            "SIMULATED_MODEL_NAME", "mistral-7b"
         ),
-        help="Number of conversation history turns to include (default: from env or 3)",
+        help="Model name for simulation purposes",
     )
 
     # Namespace
@@ -234,16 +268,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--llm-binding",
         type=str,
-        default=get_env_value("LLM_BINDING", "ollama"),
-        choices=["lollms", "ollama", "openai", "openai-ollama", "azure_openai"],
-        help="LLM binding type (default: from env or ollama)",
+        default=get_env_value("LLM_BINDING", "openai"),
+        choices=["lollms", "openai", "azure_openai", "anthropic", "bedrock", "gemini", "hf", "jina", "lmdeploy", "nvidia_openai", "siliconcloud", "zhipu"],
+        help="LLM binding type (default: from env or openai)",
     )
     parser.add_argument(
         "--embedding-binding",
         type=str,
-        default=get_env_value("EMBEDDING_BINDING", "ollama"),
-        choices=["lollms", "ollama", "openai", "azure_openai"],
-        help="Embedding binding type (default: from env or ollama)",
+        default=get_env_value("EMBEDDING_BINDING", "openai"),
+        choices=["lollms", "openai", "azure_openai", "anthropic", "bedrock", "gemini", "hf", "jina", "lmdeploy", "nvidia_openai", "siliconcloud", "zhipu"],
+        help="Embedding binding type (default: from env or openai)",
     )
 
     args = parser.parse_args()
@@ -269,10 +303,7 @@ def parse_args() -> argparse.Namespace:
     # Get MAX_PARALLEL_INSERT from environment
     args.max_parallel_insert = get_env_value("MAX_PARALLEL_INSERT", 2, int)
 
-    # Handle openai-ollama special case
-    if args.llm_binding == "openai-ollama":
-        args.llm_binding = "openai"
-        args.embedding_binding = "ollama"
+    # Special case handling removed
 
     args.llm_binding_host = get_env_value(
         "LLM_BINDING_HOST", get_default_host(args.llm_binding)
@@ -326,7 +357,7 @@ def parse_args() -> argparse.Namespace:
     args.guest_token_expire_hours = get_env_value("GUEST_TOKEN_EXPIRE_HOURS", 24, int)
     args.jwt_algorithm = get_env_value("JWT_ALGORITHM", "HS256")
 
-    ollama_server_infos.LIGHTRAG_MODEL = args.simulated_model_name
+    # Removed Ollama model reference
 
     return args
 
