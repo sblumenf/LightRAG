@@ -1,9 +1,0 @@
-tree 0b20e391c838c5bfc6c0513738acc54ae9ec5ec5
-parent 27ab894d00f03c2186fe69a128760d7c082e5f12
-author dixyes <dixyes@gmail.com> 1741423240 +0800
-committer dixyes <dixyes@gmail.com> 1741423240 +0800
-
-Fix qdrant payload id
-
-Qdrant now is using PointStruct.payload["id"], not PointStruct.id UUID.
-This will fix id overwrite

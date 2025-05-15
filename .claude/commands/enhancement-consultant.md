@@ -38,6 +38,14 @@ After our interview, I'll create a detailed PRD with:
 - Pseudo code for complex logic
 - Mermaid diagrams for workflows
 
+**DO NOT IMPLEMENT ANY CODE.  THE ONLY OUTPUT IS A PRD DOCUMENT**
+
+## Remember to conduct the interview and not go straight into implementation
+- the first task is to research the codebase
+- the second task is to conduct and inteview to unsure understaning
+- the third taks is to create a detaipled PRD
+- you should not implement any code
+
 ---
 
 **Starting now: I will first analyze your codebase to understand the current implementation before asking any questions about "$ARGUMENTS".**

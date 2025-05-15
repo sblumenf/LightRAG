@@ -37,27 +37,117 @@ The foundation of the interface is a flexible, panel-based workspace system:
 - **Panel Arrangement Logic** - Intuitive controls for repositioning and resizing panels during editing
 - **☆ Workflow Templates** - **Pre-defined panel arrangements optimized for specific exam preparation strategies (weak topic remediation, formula mastery, practice test review) with guided workflows**
 
+### Advanced Panel Management
+
+- **Panel Interaction Refinements**
+  - **Magnetic Snap Points** - Panels automatically align to optimal grid positions when dragged near edges or other panels
+  - **Smart Panel Boundaries** - Intelligent collision detection prevents panel overlap with smooth deflection animations
+  - **Panel Grouping** - Link related panels to move and resize as a unit, with visual indicators showing grouped panels
+  - **Gesture-Based Controls** - Intuitive swipe gestures for panel switching on touch devices
+  - **Panel Peek Feature** - Hover near collapsed panel edges to preview content without fully expanding
+  - **Quick-Switch Panel Navigation** - Keyboard shortcuts and visual indicators for rapid panel focus changes
+  - **Panel State Memory** - Individual panels remember their scroll position, zoom level, and internal state
+  - **Contextual Panel Menus** - Right-click menus specific to each panel type with relevant actions
+
+- **Transition Choreography**
+  - **Staggered Panel Animations** - Orchestrated entrance/exit sequences when switching layouts with configurable timing
+  - **Morphing Transitions** - Smooth transformations between panel configurations using fluid animation curves
+  - **Content Persistence** - Maintain visual continuity by keeping content visible during panel reorganization
+  - **Elastic Boundaries** - Subtle bounce effects with spring physics when panels reach size constraints
+  - **Cross-Panel Transitions** - Coordinated animations when content moves between panels
+  - **Layout Transition Presets** - Pre-configured animation styles (smooth, snappy, minimal) for different preferences
+  - **Performance-Optimized Transitions** - GPU-accelerated animations that maintain 60fps even with complex layouts
+
+- **Advanced Resizing Behaviors**
+  - **Proportional Resize** - Maintain relative panel proportions when resizing the window
+  - **Minimum Content Requirements** - Panels enforce minimum sizes based on their content needs
+  - **Resize Handle Feedback** - Visual hints showing resize constraints and snap points
+  - **Collaborative Resizing** - Adjacent panels adjust automatically to accommodate size changes
+  - **Preset Size Options** - Quick-access buttons for common panel sizes (50%, 33%, 25%)
+
 ## Detailed Panel Components
 
 ### Knowledge Graph Visualization Panel
 
 Central to the experience is a sophisticated, interactive visualization of the exam curriculum:
 
-- **Node Representation**
-  - Different shapes/icons representing different concept types (principles, formulas, processes, etc.)
-  - Size variations indicating exam importance/weight
-  - Color-coding for different domains/sections of the exam syllabus
-  - Visual indicators of user progress/confidence on each topic
-  - Badges for frequently tested concepts
-  - **☆ Historical Exam Frequency Indicators** - **Visual representation of how frequently concepts appear on past exams, helping users prioritize high-yield topics**
-  - **☆ Concept Difficulty Ratings** - **Visual indicators showing the relative difficulty of concepts based on aggregate user performance data**
+- **Advanced Node Design**
+  - **Multi-State Visual Indicators**
+    - Progress rings showing mastery percentage with gradient fills
+    - Importance badges with exam weight percentages
+    - Recency indicators with time-based color fading
+    - Confidence meters using concentric circle patterns
+    - Study streak badges for consistent engagement
+  - **Particle Effect System**
+    - Subtle floating particles around high-priority nodes
+    - Success celebration particles on mastery achievement
+    - Active learning particles during current study sessions
+    - Ambient particles showing knowledge graph activity
+  - **Dynamic Node Sizing**
+    - Smooth size transitions based on zoom level and importance
+    - Context-aware sizing that emphasizes relevant nodes
+    - Proximity-based scaling for better focus
+    - Performance-optimized scaling with LOD (Level of Detail) system
+  - **Node State Animations**
+    - Pulse effects for newly unlocked concepts
+    - Breathing animations for current focus nodes
+    - Shake effects for concepts needing review
+    - Glow effects for recently mastered topics
+  - **☆ Node Weather System** - **Visual metaphors showing concept "climate" (stormy for difficult topics, sunny for mastered concepts)**
+  - **☆ Node Constellation Patterns** - **Visual groupings that form recognizable patterns for related concept clusters**
 
-- **Edge Representation**
-  - Directional arrows showing prerequisite relationships
-  - Different line styles for different relationship types (contains, depends on, similar to)
-  - Edge thickness indicating strength of relationship
-  - Animated "flow" effects highlighting paths when selected
-  - **☆ Common Misconception Edges** - **Special edge type highlighting frequently confused concepts to help users avoid common exam pitfalls**
+- **Enhanced Edge Representation**
+  - **Flow Visualization Enhancements**
+    - Animated particles traveling along edges with varying speeds based on relationship strength
+    - Directional flow indicators with arrow animations
+    - Branching particles at edge intersections
+    - Color-coded particles for different relationship types
+  - **Edge Bundling System**
+    - Intelligent grouping of parallel edges to reduce clutter
+    - Interactive bundle expansion on hover
+    - Hierarchical bundling for nested relationships
+    - Force-directed bundle routing for optimal paths
+  - **Relationship Strength Indicators**
+    - Variable edge thickness with smooth gradients
+    - Opacity variations showing confidence levels
+    - Animated pulse frequency indicating usage patterns
+    - Heat map coloring for frequently traversed paths
+  - **Interactive Edge States**
+    - Hover effects revealing relationship labels
+    - Click-to-highlight full relationship paths
+    - Edge selection for detailed relationship info
+    - Multi-edge selection for comparison
+  - **☆ Edge Traffic Visualization** - **Real-time visualization of learning path usage with traffic flow metaphors**
+  - **☆ Relationship Weather** - **Visual effects (lightning, rain) showing volatile or difficult connections**
+
+- **Visual Effects and Polish**
+  - **Depth and Layering**
+    - Subtle shadows for depth perception
+    - Blur effects for background nodes
+    - Z-order management for overlapping elements
+    - Atmospheric perspective for distant nodes
+  - **Ambient Animation System**
+    - Gentle floating motion for idle nodes
+    - Synchronized breathing effects across the graph
+    - Environmental particle systems
+    - Dynamic lighting effects based on time of day
+  - **Performance Optimization**
+    - WebGL-accelerated rendering for smooth performance
+    - Frustum culling for off-screen elements
+    - Dynamic Level-of-Detail adjustments
+    - Efficient batching for similar visual elements
+
+- **Node Clustering and Layout**
+  - **Intelligent Clustering**
+    - Force-directed clusters for related concepts
+    - Collapsible cluster containers
+    - Cluster-level operations (select all, hide, emphasize)
+    - Visual cluster boundaries with organic shapes
+  - **Layout Algorithm Enhancements**
+    - Multiple layout presets optimized for different view needs
+    - Smooth transitions between layout algorithms
+    - User-adjustable layout parameters
+    - Save custom layout configurations
 
 - **Interactive Drill-Down**
   - Progressive disclosure of information via hover/click interactions
