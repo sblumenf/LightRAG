@@ -76,7 +76,7 @@ const defaultLayouts: WorkspaceLayout[] = [
 ]
 
 const usePanelsStore = create<PanelsState>()(
-  subscribeWithSelector((set, get) => ({
+  subscribeWithSelector((set) => ({
     currentLayout: defaultLayouts[0],
     panelStates: {},
     panelContexts: {},
@@ -137,7 +137,7 @@ const usePanelsStore = create<PanelsState>()(
         ...prev.panelStates,
         [panelId]: {
           ...prev.panelStates[panelId],
-          isVisible: !prev.panelStates[panelId]?.isVisible ?? true
+          isVisible: !(prev.panelStates[panelId]?.isVisible ?? false)
         }
       }
     })),

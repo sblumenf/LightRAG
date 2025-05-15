@@ -49,6 +49,9 @@ function TabsNavigation() {
         <NavigationTab value="api" currentTab={currentTab}>
           {t('header.api')}
         </NavigationTab>
+        <NavigationTab value="panels" currentTab={currentTab}>
+          {t('header.panels', { defaultValue: 'Panels' })}
+        </NavigationTab>
       </TabsList>
     </div>
   )
